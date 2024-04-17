@@ -111,7 +111,7 @@ void InsertSomeC(uint & testnum, uint & testerr, lasd::DictionaryContainer<Data>
   bool tst = true;
   try {
     std::cout << " " << testnum << " (" << testerr << ") Insertion in the dictionary container of the values of the given mappable container; ";
-    std::cout << ((tst = con.InsertAll(mc)) ? "some value" : "none of the values") << " has been inserted: ";
+    std::cout << ((tst = con.InsertSome(mc)) ? "some value" : "none of the values") << " has been inserted: ";
     std::cout << ((tst = (tst == chk)) ? "Correct" : "Error") << "!" << std::endl;
   }
   catch (std::exception & exc) {
@@ -127,7 +127,7 @@ void InsertSomeM(uint & testnum, uint & testerr, lasd::DictionaryContainer<Data>
   bool tst = true;
   try {
     std::cout << " " << testnum << " (" << testerr << ") Insertion in the dictionary container of the values of the given mappable container; ";
-    std::cout << ((tst = con.InsertAll(std::move(mc))) ? "some value" : "none of the values") << " has been inserted: ";
+    std::cout << ((tst = con.InsertSome(std::move(mc))) ? "some value" : "none of the values") << " has been inserted: ";
     std::cout << ((tst = (tst == chk)) ? "Correct" : "Error") << "!" << std::endl;
   }
   catch (std::exception & exc) {
@@ -143,7 +143,7 @@ void RemoveSome(uint & testnum, uint & testerr, lasd::DictionaryContainer<Data> 
   bool tst = true;
   try {
     std::cout << " " << testnum << " (" << testerr << ") Removal from the dictionary container of the values of the given mappable container; ";
-    std::cout << ((tst = con.RemoveAll(mc)) ? "some value" : "none of the values") << " has been removed: ";
+    std::cout << ((tst = con.RemoveSome(mc)) ? "some value" : "none of the values") << " has been removed: ";
     std::cout << ((tst = (tst == chk)) ? "Correct" : "Error") << "!" << std::endl;
   }
   catch (std::exception & exc) {
