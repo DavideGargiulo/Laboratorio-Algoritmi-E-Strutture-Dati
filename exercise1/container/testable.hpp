@@ -1,4 +1,3 @@
-
 #ifndef TESTABLE_HPP
 #define TESTABLE_HPP
 
@@ -6,14 +5,13 @@
 
 namespace lasd {
 
-  template <typename Data>
+  template <typename Data> 
   class TestableContainer : virtual public Container {
     private:
 
     protected:
 
     public:
-
       // Destructor
       virtual ~TestableContainer() = default;
 

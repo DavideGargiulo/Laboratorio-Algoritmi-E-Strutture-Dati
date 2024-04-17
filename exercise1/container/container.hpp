@@ -1,4 +1,3 @@
-
 #ifndef CONTAINER_HPP
 #define CONTAINER_HPP
 
@@ -8,7 +7,7 @@ namespace lasd {
     private:
 
     protected:
-      unsigned long size = 0;
+      ulong size{0};
 
       // Default constructor
       Container() = default;
@@ -18,7 +17,7 @@ namespace lasd {
       virtual ~Container() = default;
 
       // Copy assignment
-      Container& operator=(const Container&) = delete; 
+      Container& operator=(const Container&) = delete;
 
       // Move assignment
       Container& operator=(Container&&) noexcept = delete;
@@ -28,13 +27,13 @@ namespace lasd {
       bool operator!=(const Container&) const noexcept = delete;
 
       // Specific member functions
-      inline bool Empty() const noexcept { 
-        return size == 0; 
-      };
+      inline virtual bool Empty() const noexcept { 
+          return 0 == size; 
+      }
 
-      inline unsigned long Size() const noexcept {
-        return size;
-      };
+      inline virtual unsigned long Size() const noexcept { 
+          return size; 
+      }
   };
 
   class ClearableContainer : virtual public Container {
@@ -43,22 +42,21 @@ namespace lasd {
     protected:
 
     public:
+      // Destructor
+      virtual ~ClearableContainer() = default;
 
-    // Destructor
-    virtual ~ClearableContainer() = default;
+      // Copy assignment
+      ClearableContainer& operator=(const ClearableContainer&) = delete;
 
-    // Copy assignment
-    ClearableContainer& operator=(const ClearableContainer&) = delete;
+      // Move assignment
+      ClearableContainer& operator=(ClearableContainer&&) noexcept = delete;
 
-    // Move assignment
-    ClearableContainer& operator=(ClearableContainer&&) noexcept = delete;
+      // Comparison operators
+      bool operator==(const ClearableContainer& container) const noexcept = delete;
+      bool operator!=(const ClearableContainer& container) const noexcept = delete;
 
-    // Comparison operators
-    bool operator==(const ClearableContainer&) const noexcept = delete;
-    bool operator!=(const ClearableContainer&) const noexcept = delete;
-
-    // Specific member functions
-    virtual void Clear() = 0;
+      // Specific member functions
+      virtual void Clear() = 0;
   };
 
   class ResizableContainer : virtual public ClearableContainer {
@@ -67,27 +65,27 @@ namespace lasd {
     protected:
 
     public:
-
       // Destructor
       virtual ~ResizableContainer() = default;
 
       // Copy assignment
-      ResizableContainer& operator=(const ResizableContainer&) noexcept = delete;
+      ResizableContainer &operator=(const ResizableContainer& container) noexcept = delete;
 
       // Move assignment
-      ResizableContainer& operator=(ResizableContainer&&) noexcept = delete;
+      ResizableContainer &operator=(ResizableContainer&& container) noexcept = delete;
 
       // Comparison operators
-      bool operator==(const ResizableContainer&) const noexcept = delete;
-      bool operator!=(const ResizableContainer&) const noexcept = delete;
+      bool operator==(const ResizableContainer& container) const noexcept = delete;
+      bool operator!=(const ResizableContainer& container) const noexcept = delete;
 
       // Specific member functions
       virtual void Resize(unsigned long) = 0;
 
       // Specific member function (inherited from ClearableContainer)
-      void Clear() override {
-        Resize(0);
-      };
+      void Clear() override { 
+          Resize(0); 
+      }
   };
 }
+
 #endif
