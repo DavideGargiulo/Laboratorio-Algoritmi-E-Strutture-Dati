@@ -2,22 +2,20 @@
 
 namespace lasd {
 
-  template <typename Data>
-  bool LinearContainer<Data>::operator==(const LinearContainer<Data>& container) const noexcept {
+  template <typename Data> bool
+  LinearContainer<Data>::operator==(const LinearContainer<Data>& container) const noexcept {
     if (size != container.size) {
-      return false;
+        return false;
     }
 
-    const Data* thisData = this->data();  // Pointer to the internal array
-    const Data* containerData = container.data();     // Pointer to the other container's array
-
     for (unsigned long i = 0; i < size; ++i) {
-      if (thisData[i] != containerData[i]) {
-        return false;
-      }
+        if ((*this)[i] != container[i]) {  // Using the subscript operator to access elements
+            return false;
+        }
     }
     return true;
   }
+
 
   template <typename Data> inline const Data& 
   LinearContainer<Data>::Front() const {
