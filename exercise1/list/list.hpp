@@ -1,10 +1,9 @@
-
 #ifndef LIST_HPP
 #define LIST_HPP
 
 #include "../container/container.hpp"
-#include "../container/linear.hpp"
 #include "../container/dictionary.hpp"
+#include "../container/linear.hpp"
 
 namespace lasd {
 
@@ -13,23 +12,23 @@ namespace lasd {
     private:
 
     protected:
-
       using Container::size;
 
       struct Node {
-
         Data value;
         Node* next = nullptr;
 
         Node() = default;
+
+        // Specific constructors
         Node(const Data&);
-        Node(Data&&) noexcept;        
+        Node(Data &&) noexcept;
 
         // Copy constructor
         Node(const Node&);
 
         // Move constructor
-        Node(Node&&) noexcept;
+        Node(Node &&) noexcept;
 
         // Destructor
         virtual ~Node();
@@ -48,14 +47,14 @@ namespace lasd {
 
       // Specific constructor
       List(const TraversableContainer<Data>&);
-      List(MappableContainer<Data>&&);      
+      List(MappableContainer<Data>&&);
 
       // Copy constructor
       List(const List&);
 
       // Move constructor
-      List(List&&) noexcept;
-      
+      List(List&&);
+
       // Destructor
       virtual ~List();
 
@@ -83,9 +82,9 @@ namespace lasd {
       using TestableContainer<Data>::Exists;
 
       // Specific member functions (inherited from DictionaryContainer)
-      inline bool Insert(const Data&) override;
-      inline bool Insert(Data&&) override;
-      inline bool Remove(const Data&) override;      
+      inline bool Insert(const Data &) override;
+      inline bool Insert(Data &&) override;
+      bool Remove(const Data &) override;
 
       // Specific member functions (inherited from LinearContainer)
       inline const Data& operator[](unsigned long) const override;
@@ -98,19 +97,17 @@ namespace lasd {
       inline Data& Back() override;
 
       // Specific member function (inherited from TraversableContainer)
-      using typename TaversableContainer<Data>::TraverseFun;
-
-      inline void Traverse(TraverseFun) const override;      
+      using typename TraversableContainer<Data>::TraverseFun;
+      inline void Traverse(TraverseFun) const override;
 
       // Specific member function (inherited from PreOrderTraversableContainer)
-      inline void PreOrderTraverse(TraverseFun) const override;      
+      inline void PreOrderTraverse(TraverseFun) const override;
 
       // Specific member function (inherited from PostOrderTraversableContainer)
       inline void PostOrderTraverse(TraverseFun) const override;
-      
+
       // Specific member function (inherited from MappableContainer)
       using typename MappableContainer<Data>::MapFun;
-
       inline void Map(MapFun) override;
 
       // Specific member function (inherited from PreOrderMappableContainer)
@@ -120,8 +117,10 @@ namespace lasd {
       inline void PostOrderMap(MapFun) override;
 
     protected:
-
-      // Auxiliary functions, if necessary!
+      void PreOrderTraverse(TraverseFun, Node*) const;
+      void PostOrderTraverse(TraverseFun, Node*) const;
+      void PreOrderMap(MapFun, Node*) const;
+      void PostOrderMap(MapFun, Node*) const;
   };
 }
 

@@ -1,161 +1,212 @@
 namespace lasd {
 
-	template <typename Data>
-	List<Data>::Node::Node(const Data& data) : value(data) {}
+// Node Methods
 
-	template <typename Data>
-	List<Data>::Node::Node(Data&& data) noexcept : value(std::move(data)) {}
 
-	template <typename Data>
-	List<Data>::Node::Node(const Node& node) : value(node.value) {}
+// Constructors
 
-	template <typename Data>
-	List<Data>::Node::Node(Node&& node) noexcept : value(std::move(node.value), next(node.next)) {
+// Data copy constructor
+  template <typename Data> 
+  List<Data>::Node::Node(const Data& data) : value{data} {}
+
+// Data move constructor
+  template <typename Data> 
+  List<Data>::Node::Node(Data&& data) noexcept {
+    std::swap(data, value);
+  }
+
+// Copy constructor
+  template <typename Data>
+  List<Data>::Node::Node(const Node& otherNode) : value(otherNode.value) {}
+
+// Move constructor
+  template <typename Data>
+  List<Data>::Node::Node(Node&& node) noexcept : value(std::move(node.value)), next(node.next) {
 		node.next = nullptr;
-	}
+  }
 
-	template <typename Data>
-	List<Data>::Node::~Node() {
-		delete next;
-	}
+// Destructor
+  template <typename Data>
+  List<Data>::Node::~Node() { 
+    delete next;
+  }
 
-	template <typename Data> inline bool
-	List<Data>::Node::operator==(const Node& node) const noexcept {
+// Operators
+
+// Comparison operators
+  template <typename Data> inline bool
+  List<Data>::Node::operator==(const Node& node) const noexcept {
 		return value == node.value;
-	}
+  }
 
-	template <typename Data> inline bool
-	List<Data>::Node::operator!=(const Node& node) const noexcept {
+  template <typename Data> inline bool
+  List<Data>::Node::operator!=(const Node& node) const noexcept {
 		return value != node.value;
-	}
+  }
 
-	// to be checked
-	template <typename Data>
-	List<Data>::List(const TraversableContainer<Data>& container) {
-		Node* current = head;
-		container.Traverse([&current](const Data& data) {
-			current->next = new Node(data);
-			current = current->next;
+// List Methods
+
+
+// Constructors
+
+// Copy constructor from Different DataStructures
+  template <typename Data>
+  List<Data>::List(const TraversableContainer<Data>& container) {
+		container.Traverse([this](const Data& currentData) {
+			InsertAtBack(currentData);
 		});
-		tail = current;
-	}
+  }
 
-	// to be checked
-	template <typename Data>
+// Move constructor from Different DataStructures
+  template <typename Data>
 	List<Data>::List(MappableContainer<Data>&& container) {
-		Node* current = head;
-		container.Map([&current](Data& data) {
-			current->next = new Node(std::move(data));
-			current = current->next;
+		container.Map([this](Data& currentData) {
+			InsertAtBack(std::move(currentData));
 		});
-		tail = current;
-	}
+  }
 
 	template <typename Data>
-	List<Data>::List(const List<Data>& otherList) : size(0), head(nullptr), tail(nullptr) {
-		try {
-			head = new Node(*(otherList.head));
-			tail = head;
-			size = 1;
+	List<Data>::List(const List<Data>& otherList) {
+		if (!(size = otherList.size))
+			return;
 
-			Node* tmp = otherList.head->next;
-			while (tmp) {
-				tail->next = new Node(*tmp);
-				tail = tail->next;
-				tmp = tmp->next;
-				size++;
-			}
-		} catch (...) {
-			while (head) {
-				Node* tmp = head;
-				head = head->next;
-				delete tmp;
-			}
-			throw;
+		head = new Node(*(otherList.head));
+		tail = head;
+
+		Node *temp = otherList.head->next;
+
+		while (temp) {
+			tail->next = new Node(*temp);
+			tail = tail->next;
+			temp = temp->next;
 		}
 	}
 
-	template <typename Data>
-	List<Data>::List(List<Data>&& liotherListst) noexcept {
+// Move constructor
+  template <typename Data>
+  List<Data>::List(List<Data>&& otherList) {
 		std::swap(size, otherList.size);
 		std::swap(head, otherList.head);
 		std::swap(tail, otherList.tail);
-	}
+  }
 
-	template <typename Data>
+// Destructor
+  template <typename Data>
 	List<Data>::~List() {
 		Node* current = head;
-		while (current) {
-			Node* next = current->next;
-			delete current;
-			current = next;
+		while (current != nullptr) {
+				Node* next = current->next;
+				current->next = nullptr; // Clear the next pointer before deletion to be safe (although not necessary with the new Node destructor).
+				delete current;          // Safely delete the current node.
+				current = next;          // Move to the next node.
 		}
-		head = tail = nullptr;
+		head = tail = nullptr; // Ensure the list is completely empty.
 		size = 0;
 	}
 
-	template <typename Data> List<Data>& 
-	List<Data>::operator=(const List<Data> &otherList) {
-		if (this == &otherList) {
-			return *this; // Handle self-assignment
+// Operators
+
+// Copy assignment
+  template <typename Data> List<Data>& 
+  List<Data>::operator=(const List<Data>& otherList) {
+		if (!otherList.size) {
+			Clear();
+			return *this;
 		}
 
-		List<Data> temp(otherList); // Use copy constructor to handle all copying
-		std::swap(*this, temp); // Swap the current object with the temporary
-		return *this;
-	}
-
-	template <typename Data> inline bool
-	List<Data>::operator==(const List<Data>& otherList) const noexcept {
-		if (this->size != otherList.size) {
-			return false;
+		if (!size) {
+			List<Data> temp = otherList;
+			std::swap(temp, *this);
+			return *this;
 		}
 
-		Node* currentNode = head;
-		Node* otherNode = otherList.head;
+		Node *wl{otherList.head};
+		tail = head;
 
-		while (currentNode) {
-			if (currentNode->value != otherNode->value) {
-				return false;
+		tail->value = wl->value;
+
+		while (tail->next && wl->next) {
+			tail = tail->next;
+			wl = wl->next;
+
+			tail->value = wl->value;
+		}
+
+		if (tail->next) {
+			delete tail->next;
+			tail->next = nullptr;
+		} else
+			for (wl = wl->next; wl; wl = wl->next) {
+				InsertAtBack(wl->value);
 			}
-			currentNode = currentNode->next;
-			otherNode = otherNode->next;
+		size = otherList.size;
+		return *this;
+  }
+
+// Move assignment
+  template <typename Data>
+  List<Data>& List<Data>::operator=(List<Data>&& otherList) noexcept {
+		std::swap(size, otherList.size);
+		std::swap(head, otherList.head);
+		std::swap(tail, otherList.tail);
+		return *this;
+  }
+
+// Comparison operators
+  template <typename Data> inline bool
+	List<Data>::operator==(const List<Data> &otherList) const noexcept {
+		if (size != otherList.size)
+			return false;
+
+		Node *temp = head, *temp2 = otherList.head;
+
+		while (temp != nullptr) {
+			if (temp->value != temp2->value)
+				return false;
+			temp = temp->next;
+			temp2 = temp2->next;
 		}
 		return true;
-	}
+  }
 
-	template <typename Data> inline bool
-	List<Data>::operator!=(const List<Data> &otherList) const noexcept {
+
+  template <typename Data> inline bool
+  List<Data>::operator!=(const List<Data>& otherList) const noexcept {
 		return !(*this == otherList);
-	}
+  }
 
-	template <typename Data> inline const Data&
-	List<Data>::operator[](unsigned long index) const {
+// Specific Operators
+
+  template <typename Data> inline const Data&
+  List<Data>::operator[](unsigned long index) const {
 		if (index >= size) {
 			throw std::out_of_range("Index out of range");
 		}
 
 		Node* currentNode = head;
-		for (unsigned long i = 0; i < index; i++) {
+		for (unsigned long i = 0; i < index; ++i) {
 			currentNode = currentNode->next;
 		}
 		return currentNode->value;
-	}
+  }
 
-	template <typename Data> inline Data&
-	List<Data>::operator[](unsigned long index) {
+  template <typename Data> inline Data&
+  List<Data>::operator[](unsigned long index) {
 		if (index >= size)
 			throw std::out_of_range("Index out of range");
 
 		Node* currentNode = head;
-		for (unsigned long i = 0; i < index; i++) {
+		for (unsigned long i = 0; i < index; ++i) {
 			currentNode = currentNode->next;
 		}
 		return currentNode->value;
-	}
+  }
 
-	template <typename Data> void
-	List<Data>::InsertAtFront(const Data& data) {
+
+// Specific methods
+
+  template <typename Data> void
+  List<Data>::InsertAtFront(const Data& data) {
 		Node* newNode = new Node(data);
 		newNode->next = head;
 		head = newNode;
@@ -165,107 +216,86 @@ namespace lasd {
 		}
 
 		++size;
-	}
+  }
 
-	template <typename Data> void
-	List<Data>::InsertAtFront(Data&& data) {
-		Node* newNode = new Node(data);
-		newNode->next = head;
-		head = newNode;
+  template <typename Data>
+  void List<Data>::InsertAtFront(Data&& data) {
+    Node *newNode = new Node(std::move(data));
+    newNode->next = head;
+    head = newNode;
+    if (tail == nullptr)
+      tail = head;
+    ++size;
+  }
 
-		if (tail == nullptr) {
-			tail = head;
-		}
-
-		++size;
-	}
-
-	template <typename Data> void
-	List<Data>::RemoveFromFront() {
+  template <typename Data> void
+  List<Data>::RemoveFromFront() {
 		if (!size) {
 			throw std::length_error("List is empty");
 		}
 
 		Node* nodeToRemove = head;
-		if (head == tail) {
-			head = tail = nullptr;
-		} else {
-			head = head->next;
-		}
+		head == tail ? head = tail = nullptr : head = head->next;
 
 		nodeToRemove->next = nullptr;
 		delete nodeToRemove;
 		--size;
-	}
+  }
 
-	template <typename Data> Data
-	List<Data>::FrontNRemove() {
-		if (!size) {
-			throw std::length_error("List is empty");
-		}
+  template <typename Data> Data
+  List<Data>::FrontNRemove() {
+    if (!size) {
+      throw std::length_error("List is empty");
+    }
 
-		Node* nodeToRemove = head;
-		Data frontData = std::move(nodeToRemove->value);
+    Node* nodeToRemove = head;
+    head == tail ? head = tail = nullptr : head = head->next;
 
-		if (head == tail) {
-			head = tail = nullptr;
-		} else {
-			head = head->next;
-		}
+    nodeToRemove->next = nullptr;
+    Data data = std::move(nodeToRemove->value);
+    delete nodeToRemove;
+    --size;
+    return data;
+  }
 
-		delete nodeToRemove;
-		--size;
-		return frontData;
-	}
-
-	template <typename Data> void
-	List<Data>::InsertAtBack(const Data& data) {
+  template <typename Data> void
+  List<Data>::InsertAtBack(const Data& data) {
 		Node* newNode = new Node(data);
 
-		if (!head) {
-			head = tail = newNode;
-		} else {
-			tail->next = newNode;
-			tail = newNode;
-		}
-		++size;
-	}
+		size++ ? tail->next = newNode : head = newNode;
+    tail = newNode;
+  }
 
-	template <typename Data> void
-	List<Data>::InsertAtBack(Data&& data) {
-		Node* newNode = new Node(data);
+  template <typename Data> void
+  List<Data>::InsertAtBack(Data&& data) {
+		Node* newNode = new Node(std::move(data));
 
-		if (!head) {
-			head = tail = newNode;
-		} else {
-			tail->next = newNode;
-			tail = newNode;
-		}
-		++size;
-	}
+    size++ ? tail->next = newNode : head = newNode;
+    tail = newNode;
+  }
 
-	template <typename Data> inline bool
-	List<Data>::Insert(const Data& data) {
+  template <typename Data> inline bool
+  List<Data>::Insert(const Data& data) {
 		if (Exists(data)) {
 			return false;
 		}
 
 		InsertAtBack(data);
 		return true;
-	}
+  }
 
-	template <typename Data> inline bool
-	List<Data>::Insert(Data&& data) {
+  template <typename Data> inline bool
+  List<Data>::Insert(Data&& data) {
 		if (Exists(data)) {
 			return false;
 		}
 
-		InsertAtBack(data);
+		InsertAtBack(std::move(data));
 		return true;
-	}
+  }
 
-	template <typename Data> inline bool
-	List<Data>::Remove(const Data& data) {
+  template <typename Data> inline bool
+  List<Data>::Remove(const Data& data) {
 		if (!size) {
 			return false;
 		}
@@ -275,54 +305,132 @@ namespace lasd {
 			return true;
 		}
 
-		Node* current = head;
+		Node* current = head->next;
 		Node* previousNode = head;
 
-		while (current) {
-			if (current->value == data) {
-				if (current == tail) {
-					tail = previousNode;
-				}
-				previousNode->next = current->next;
-				delete current;
-				--size;
-				return true;
-			}
-			previousNode = current;
-			current = current->next;
-		}
+		while (current != nullptr) {
+      if (current->value == data) {
+        previousNode->next = current->next;
+        current->next ? current->next = nullptr : tail = previousNode;
+        delete current;
+        --size;
+        return true;
+      }
+      previousNode = current;
+      current = current->next;
+    }
 		return false;
-	}
+  }
 
-	template <typename Data> inline const Data&
-	List<Data>::Front() const {
+  template <typename Data> inline const Data&
+  List<Data>::Front() const {
 		if (!size) {
 			throw std::length_error("List is empty");
 		}
 		return head->value;
-	}
+  }
 
-	template <typename Data> inline Data&
-	List<Data>::Front() {
+  template <typename Data> inline Data&
+  List<Data>::Front() {
 		if (!size) {
 			throw std::length_error("List is empty");
 		}
 		return head->value;
-	}
+  }
 
-	template <typename Data> inline const Data&
-	List<Data>::Back() const {
+  template <typename Data> inline const Data&
+  List<Data>::Back() const {
 		if (!size) {
 			throw std::length_error("List is empty");
 		}
 		return tail->value;
-	}
+  }
 
-	template <typename Data> inline Data&
-	List<Data>::Back() {
+  template <typename Data> inline Data&
+  List<Data>::Back() {
 		if (!size) {
 			throw std::length_error("List is empty");
 		}
 		return tail->value;
-	}
+  }
+
+// Overrided Methods
+
+  template <typename Data> void
+  List<Data>::Clear() {
+		delete head;
+		head = tail = nullptr;
+		size = 0;
+  }
+
+  template <typename Data> inline void
+  List<Data>::Traverse(TraverseFun function) const {
+		PreOrderTraverse(function);
+  }
+
+  template <typename Data> inline void
+  List<Data>::PreOrderTraverse(TraverseFun function) const {
+		PreOrderTraverse(function, head);
+  }
+
+  template <typename Data> inline void
+  List<Data>::PostOrderTraverse(TraverseFun function) const {
+		PostOrderTraverse(function, head);
+  }
+
+  template <typename Data> inline void
+  List<Data>::Map(MapFun function) {
+		PreOrderMap(function);
+  }
+
+  template <typename Data> inline void 
+  List<Data>::PreOrderMap(MapFun function) {
+		PreOrderMap(function, head);
+  }
+
+  template <typename Data> inline void
+  List<Data>::PostOrderMap(MapFun function) {
+		PostOrderMap(function, head);
+  }
+
+// Internal Methods
+  template <typename Data> void
+  List<Data>::PreOrderTraverse(TraverseFun function, Node* currentNode) const {
+		if (!currentNode) {
+			return;
+		}
+
+		function(currentNode->value);
+		PreOrderTraverse(function, currentNode->next);
+  }
+  
+  template <typename Data> void
+  List<Data>::PostOrderTraverse(TraverseFun function, Node* currentNode) const {
+		if (!currentNode) {
+			return;
+		}
+
+		PostOrderTraverse(function, currentNode->next);
+		function(currentNode->value);
+  }
+
+  template <typename Data> void
+  List<Data>::PreOrderMap(MapFun function, Node* currentNode) const {
+		if (!currentNode) {
+			return;
+		}
+
+		function(currentNode->value);
+		PreOrderMap(function, currentNode->next);
+  }
+
+  template <typename Data>
+  void List<Data>::PostOrderMap(MapFun function, Node* currentNode) const {
+		if (!currentNode) {
+			return;
+		}
+
+		PostOrderMap(function, currentNode->next);
+		function(currentNode->value);
+  }
 }
