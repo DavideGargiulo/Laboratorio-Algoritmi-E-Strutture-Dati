@@ -362,8 +362,8 @@ void stestQueue(uint & testnum, uint & testerr) {
 
 /* ************************************************************************** */
 
-// void testSimpleExercise1B(uint & testnum, uint & testerr) {
-//   stestStack(testnum, testerr);
-//   stestQueue(testnum, testerr);
-//   cout << endl << "Exercise 1B (Simple Test) (Errors/Tests: " << testerr << "/" << testnum << ")" << endl;
-// }
+void testSimpleExercise1B(uint & testnum, uint & testerr) {
+  //stestStack(testnum, testerr);
+  //stestQueue(testnum, testerr);
+  cout << endl << "Exercise 1B (Simple Test) (Errors/Tests: " << testerr << "/" << testnum << ")" << endl;
+}

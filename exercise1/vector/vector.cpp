@@ -38,7 +38,6 @@ inline Vector<Data>::Vector(Vector<Data> &&vec) noexcept {
   std::swap(size, vec.size);
   std::swap(elements, vec.elements);
 }
-
 // Operators
 
 template <typename Data>
@@ -49,45 +48,46 @@ inline Vector<Data> &Vector<Data>::operator=(const Vector<Data> &vec) {
 }
 
 template <typename Data>
-inline Vector<Data> &Vector<Data>::operator=(Vector<Data> &&vec) noexcept {
-  std::swap(size, vec.size);
-  std::swap(elements, vec.elements);
+inline Vector<Data> &Vector<Data>::operator=(Vector<Data> &&vector) noexcept {
+  std::swap(size, vector.size);
+  std::swap(elements, vector.elements);
   return *this;
 }
 
 template <typename Data>
-bool Vector<Data>::operator==(const Vector<Data> &vec) const noexcept {
-  if (size != vec.size) {
-    return false;
-  }
-
-  for (unsigned long i = 0; i < size; i++) {
-    if (elements[i] != vec[i]) {
-      return false;
+bool Vector<Data>::operator==(const Vector<Data> &vector) const noexcept {
+    if (size != vector.size) {
+        std::cout << "Vector sizes differ: " << size << " vs " << vector.size << std::endl;
+        return false;
     }
-  }
-  return true;
+
+    for (unsigned long i = 0; i < size; ++i) {
+        if (elements[i] != vector.elements[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template <typename Data>
-inline bool Vector<Data>::operator!=(const Vector<Data> &vec) const noexcept {
-  return !(*this == vec);
+inline bool Vector<Data>::operator!=(const Vector<Data> &vector) const noexcept {
+  return !(*this == vector);
 }
 
 template <typename Data>
-inline const Data &Vector<Data>::operator[](unsigned long i) const {
-  if (i >= size) {
+inline const Data &Vector<Data>::operator[](unsigned long index) const {
+  if (index >= size) {
     throw std::out_of_range("This Vector has not that many elements");
   }
-  return elements[i];
+  return elements[index];
 }
 
 template <typename Data>
-inline Data &Vector<Data>::operator[](unsigned long i) {
-  if (i >= size) {
+inline Data &Vector<Data>::operator[](unsigned long index) {
+  if (index >= size) {
     throw std::out_of_range("This Vector has not that many elements");
   }
-  return elements[i];
+  return elements[index];
 }
 
 // Overrided Methods
@@ -146,15 +146,15 @@ template <typename Data> inline Data &Vector<Data>::Back() {
 /* ************************************************************************** */
 template <typename Data>
 inline SortableVector<Data> &
-SortableVector<Data>::operator=(const SortableVector<Data> &vec) {
-  Vector<Data>::operator=(vec);
+SortableVector<Data>::operator=(const SortableVector<Data> &vector) {
+  Vector<Data>::operator=(vector);
   return *this;
 }
 
 template <typename Data>
 inline SortableVector<Data> &
-SortableVector<Data>::operator=(SortableVector<Data> &&vec) noexcept {
-  Vector<Data>::operator=(std::move(vec));
+SortableVector<Data>::operator=(SortableVector<Data> &&vector) noexcept {
+  Vector<Data>::operator=(std::move(vector));
   return *this;
 }
 

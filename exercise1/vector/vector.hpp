@@ -11,10 +11,10 @@ namespace lasd {
     private:
       
     protected:
-      using Container::size;
-      Data *elements = nullptr;
       
     public:
+      using Container::size;
+      Data *elements = nullptr;
       // Default constructor
       Vector() = default;
 
@@ -44,7 +44,7 @@ namespace lasd {
       inline Vector<Data>& operator=(Vector<Data>&&) noexcept;
 
       // Comparison operators
-      bool operator==(const Vector<Data>&) const noexcept;
+      inline bool operator==(const Vector<Data>&) const noexcept;
       inline bool operator!=(const Vector<Data>&) const noexcept;
 
       // Specific member function (inherited from ClearableContainer)
