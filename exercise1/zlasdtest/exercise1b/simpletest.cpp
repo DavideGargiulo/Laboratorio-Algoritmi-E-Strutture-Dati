@@ -20,7 +20,7 @@ using namespace std;
 
 /* ************************************************************************** */
 
-/*template <typename Stk>
+template <typename Stk>
 void stestStackInt(Stk & stk, uint & testnum, uint & testerr) {
   uint loctestnum = 0, loctesterr = 0;
   try {
@@ -187,11 +187,11 @@ void stestStack(uint & testnum, uint & testerr) {
   testnum += loctestnum;
   testerr += loctesterr;
   cout << endl << "Exercise 1B - Stack (Errors/Tests: " << loctesterr << "/" << loctestnum << ")" << endl;
-}*/
+}
 
 /* ************************************************************************** */
 
-/*template <typename Que>
+template <typename Que>
 void stestQueueInt(Que & que, uint & testnum, uint & testerr) {
   uint loctestnum = 0, loctesterr = 0;
   try {
@@ -358,12 +358,12 @@ void stestQueue(uint & testnum, uint & testerr) {
   testnum += loctestnum;
   testerr += loctesterr;
   cout << endl << "Exercise 1B - Queue (Errors/Tests: " << loctesterr << "/" << loctestnum << ")" << endl;
-}*/
+}
 
 /* ************************************************************************** */
 
 void testSimpleExercise1B(uint & testnum, uint & testerr) {
-  //stestStack(testnum, testerr);
-  //stestQueue(testnum, testerr);
+  stestStack(testnum, testerr);
+  stestQueue(testnum, testerr);
   cout << endl << "Exercise 1B (Simple Test) (Errors/Tests: " << testerr << "/" << testnum << ")" << endl;
 }

@@ -1,55 +1,45 @@
 namespace lasd {
 
-// Node Methods
-
-
-// Constructors
-
-// Data copy constructor
+  // Node constructor with an initial value.
   template <typename Data> 
-  List<Data>::Node::Node(const Data& data) : value{data} {}
+  List<Data>::Node::Node(const Data& initialValue) : value{initialValue} {}
 
-// Data move constructor
+
+  // Node move constructor.
   template <typename Data> 
-  List<Data>::Node::Node(Data&& data) noexcept {
-    std::swap(data, value);
+  List<Data>::Node::Node(Data&& movedValue) noexcept {
+    std::swap(movedValue, value);
   }
 
-// Copy constructor
+  // Node copy constructor.
   template <typename Data>
   List<Data>::Node::Node(const Node& otherNode) : value(otherNode.value) {}
 
-// Move constructor
+  // Node move constructor.
   template <typename Data>
-  List<Data>::Node::Node(Node&& node) noexcept : value(std::move(node.value)), next(node.next) {
-		node.next = nullptr;
+  List<Data>::Node::Node(Node&& otherNode) noexcept : value(std::move(otherNode.value)), next(otherNode.next) {
+    otherNode.next = nullptr;
   }
 
-// Destructor
+  // Node destructor.
   template <typename Data>
   List<Data>::Node::~Node() { 
     delete next;
   }
 
-// Operators
-
-// Comparison operators
+  // Equality operator for nodes.
   template <typename Data> inline bool
-  List<Data>::Node::operator==(const Node& node) const noexcept {
-		return value == node.value;
+  List<Data>::Node::operator==(const Node& otherNode) const noexcept {
+    return value == otherNode.value;
   }
 
+  // Inequality operator for nodes.
   template <typename Data> inline bool
-  List<Data>::Node::operator!=(const Node& node) const noexcept {
-		return value != node.value;
+  List<Data>::Node::operator!=(const Node& otherNode) const noexcept {
+    return value != otherNode.value;
   }
 
-// List Methods
-
-
-// Constructors
-
-// Copy constructor from Different DataStructures
+  // Constructor taking a traversable container: Initializes the list with the elements of the provided container.
   template <typename Data>
   List<Data>::List(const TraversableContainer<Data>& container) {
 		container.Traverse([this](const Data& currentData) {
@@ -57,7 +47,7 @@ namespace lasd {
 		});
   }
 
-// Move constructor from Different DataStructures
+  // Constructor taking a mappable container: Initializes the list with the elements of the provided container.
   template <typename Data>
 	List<Data>::List(MappableContainer<Data>&& container) {
 		container.Map([this](Data& currentData) {
@@ -65,118 +55,114 @@ namespace lasd {
 		});
   }
 
-	template <typename Data>
-	List<Data>::List(const List<Data>& otherList) {
-		if (!(size = otherList.size))
-			return;
-
-		head = new Node(*(otherList.head));
-		tail = head;
-
-		Node *temp = otherList.head->next;
-
-		while (temp) {
-			tail->next = new Node(*temp);
-			tail = tail->next;
-			temp = temp->next;
-		}
-	}
-
-// Move constructor
+  // Copy constructor: Initializes the list as a copy of another list.
   template <typename Data>
-  List<Data>::List(List<Data>&& otherList) {
-		std::swap(size, otherList.size);
-		std::swap(head, otherList.head);
-		std::swap(tail, otherList.tail);
+  List<Data>::List(const List<Data>& sourceList) {
+    if (!(size = sourceList.size))
+      return;
+
+    head = new Node(*(sourceList.head));
+    tail = head;
+
+    Node *currentNode = sourceList.head->next;
+
+    while (currentNode) {
+      tail->next = new Node(*currentNode);
+      tail = tail->next;
+      currentNode = currentNode->next;
+    }
   }
 
-// Destructor
+  // Move constructor: Initializes the list by moving the contents of another list.
   template <typename Data>
-	List<Data>::~List() {
-		Node* current = head;
-		while (current != nullptr) {
-				Node* next = current->next;
-				current->next = nullptr; // Clear the next pointer before deletion to be safe (although not necessary with the new Node destructor).
-				delete current;          // Safely delete the current node.
-				current = next;          // Move to the next node.
-		}
-		head = tail = nullptr; // Ensure the list is completely empty.
-		size = 0;
-	}
+  List<Data>::List(List<Data>&& sourceList) {
+    std::swap(size, sourceList.size);
+    std::swap(head, sourceList.head);
+    std::swap(tail, sourceList.tail);
+  }
 
-// Operators
+  // List destructor.
+  template <typename Data>
+  List<Data>::~List() {
+    Node* currentNode = head;
+    while (currentNode != nullptr) {
+      Node* nextNode = currentNode->next;
+      currentNode->next = nullptr; 
+      delete currentNode;          
+      currentNode = nextNode;          
+    }
+    head = tail = nullptr; 
+    size = 0;
+  }
 
-// Copy assignment
+  // Copy assignment operator: Assigns the contents of another list to this list.
   template <typename Data> List<Data>& 
-  List<Data>::operator=(const List<Data>& otherList) {
-		if (!otherList.size) {
-			Clear();
-			return *this;
-		}
+  List<Data>::operator=(const List<Data>& sourceList) {
+    if (this == &sourceList) {
+      return *this;
+    }
 
-		if (!size) {
-			List<Data> temp = otherList;
-			std::swap(temp, *this);
-			return *this;
-		}
+    if (sourceList.head == nullptr) {
+      Clear();
+      return *this;
+    }
 
-		Node *wl{otherList.head};
-		tail = head;
+    Clear();
 
-		tail->value = wl->value;
+    Node* sourceNode = sourceList.head;
+    Node* lastNewNode = nullptr;
 
-		while (tail->next && wl->next) {
-			tail = tail->next;
-			wl = wl->next;
+    while (sourceNode) {
+      Node* newNode = new Node(sourceNode->value);
+      if (lastNewNode == nullptr) {
+        head = newNode;
+      } else {
+        lastNewNode->next = newNode;
+      }
+      lastNewNode = newNode;
 
-			tail->value = wl->value;
-		}
+      sourceNode = sourceNode->next;
+    }
 
-		if (tail->next) {
-			delete tail->next;
-			tail->next = nullptr;
-		} else
-			for (wl = wl->next; wl; wl = wl->next) {
-				InsertAtBack(wl->value);
-			}
-		size = otherList.size;
-		return *this;
+    tail = lastNewNode;
+    size = sourceList.size;
+
+    return *this;
   }
 
-// Move assignment
+  // Move assignment operator: Assigns the contents of another list to this list by moving.
   template <typename Data>
-  List<Data>& List<Data>::operator=(List<Data>&& otherList) noexcept {
-		std::swap(size, otherList.size);
-		std::swap(head, otherList.head);
-		std::swap(tail, otherList.tail);
-		return *this;
+  List<Data>& List<Data>::operator=(List<Data>&& sourceList) noexcept {
+    std::swap(size, sourceList.size);
+    std::swap(head, sourceList.head);
+    std::swap(tail, sourceList.tail);
+    return *this;
   }
 
-// Comparison operators
+  // Equality operator: Checks if two lists are equal in size and content.
   template <typename Data> inline bool
-	List<Data>::operator==(const List<Data> &otherList) const noexcept {
-		if (size != otherList.size)
-			return false;
+  List<Data>::operator==(const List<Data> &otherList) const noexcept {
+    if (size != otherList.size)
+      return false;
 
-		Node *temp = head, *temp2 = otherList.head;
+    Node *current = head, *otherCurrent = otherList.head;
 
-		while (temp != nullptr) {
-			if (temp->value != temp2->value)
-				return false;
-			temp = temp->next;
-			temp2 = temp2->next;
-		}
-		return true;
+    while (current != nullptr) {
+      if (current->value != otherCurrent->value)
+        return false;
+      current = current->next;
+      otherCurrent = otherCurrent->next;
+    }
+    return true;
   }
 
-
+  // Inequality operator: Checks if two lists are not equal in size or content.
   template <typename Data> inline bool
   List<Data>::operator!=(const List<Data>& otherList) const noexcept {
-		return !(*this == otherList);
+    return !(*this == otherList);
   }
 
-// Specific Operators
-
+  // Access operator (const version) to retrieve element at a specific index.
   template <typename Data> inline const Data&
   List<Data>::operator[](unsigned long index) const {
 		if (index >= size) {
@@ -190,6 +176,7 @@ namespace lasd {
 		return currentNode->value;
   }
 
+  // Access operator to retrieve element at a specific index.
   template <typename Data> inline Data&
   List<Data>::operator[](unsigned long index) {
 		if (index >= size)
@@ -202,9 +189,7 @@ namespace lasd {
 		return currentNode->value;
   }
 
-
-// Specific methods
-
+  // Insert an element at the front of the list.
   template <typename Data> void
   List<Data>::InsertAtFront(const Data& data) {
 		Node* newNode = new Node(data);
@@ -218,6 +203,7 @@ namespace lasd {
 		++size;
   }
 
+  // Move version of the InsertAtFront function.
   template <typename Data>
   void List<Data>::InsertAtFront(Data&& data) {
     Node *newNode = new Node(std::move(data));
@@ -228,6 +214,7 @@ namespace lasd {
     ++size;
   }
 
+  // Remove the element at the front of the list.
   template <typename Data> void
   List<Data>::RemoveFromFront() {
 		if (!size) {
@@ -235,13 +222,18 @@ namespace lasd {
 		}
 
 		Node* nodeToRemove = head;
-		head == tail ? head = tail = nullptr : head = head->next;
+    if (head == tail) {
+      head = tail = nullptr;
+    } else {
+      head = head->next;
+    }
 
 		nodeToRemove->next = nullptr;
 		delete nodeToRemove;
 		--size;
   }
 
+  // Retrieve the element at the front of the list and then remove it.
   template <typename Data> Data
   List<Data>::FrontNRemove() {
     if (!size) {
@@ -249,7 +241,11 @@ namespace lasd {
     }
 
     Node* nodeToRemove = head;
-    head == tail ? head = tail = nullptr : head = head->next;
+    if (head == tail) {
+      head = tail = nullptr;
+    } else {
+      head = head->next;
+    }
 
     nodeToRemove->next = nullptr;
     Data data = std::move(nodeToRemove->value);
@@ -258,22 +254,35 @@ namespace lasd {
     return data;
   }
 
+  // Insert an element at the back of the list.
   template <typename Data> void
   List<Data>::InsertAtBack(const Data& data) {
 		Node* newNode = new Node(data);
 
-		size++ ? tail->next = newNode : head = newNode;
+		if (size++) {
+      tail->next = newNode;
+    } else {
+      head = newNode;
+    }
+
     tail = newNode;
   }
 
+  // Move version of the InsertAtBack function.
   template <typename Data> void
   List<Data>::InsertAtBack(Data&& data) {
 		Node* newNode = new Node(std::move(data));
 
-    size++ ? tail->next = newNode : head = newNode;
+    if (size++) {
+      tail->next = newNode;
+    } else {
+      head = newNode;
+    }
+
     tail = newNode;
   }
 
+  // Insert an element into the list if it does not already exist.
   template <typename Data> inline bool
   List<Data>::Insert(const Data& data) {
 		if (Exists(data)) {
@@ -284,6 +293,7 @@ namespace lasd {
 		return true;
   }
 
+  // Move version of the Insert function.
   template <typename Data> inline bool
   List<Data>::Insert(Data&& data) {
 		if (Exists(data)) {
@@ -294,6 +304,7 @@ namespace lasd {
 		return true;
   }
 
+  // Remove an element from the list.
   template <typename Data> inline bool
   List<Data>::Remove(const Data& data) {
 		if (!size) {
@@ -311,7 +322,12 @@ namespace lasd {
 		while (current != nullptr) {
       if (current->value == data) {
         previousNode->next = current->next;
-        current->next ? current->next = nullptr : tail = previousNode;
+        if (current->next) {
+          current->next = nullptr;
+        } else {
+          tail = previousNode;
+        }
+
         delete current;
         --size;
         return true;
@@ -322,6 +338,7 @@ namespace lasd {
 		return false;
   }
 
+  // Retrieve the element at the front of the list (const version).
   template <typename Data> inline const Data&
   List<Data>::Front() const {
 		if (!size) {
@@ -330,6 +347,7 @@ namespace lasd {
 		return head->value;
   }
 
+  // Retrieve the element at the front of the list (non-const version).
   template <typename Data> inline Data&
   List<Data>::Front() {
 		if (!size) {
@@ -338,6 +356,7 @@ namespace lasd {
 		return head->value;
   }
 
+  // Retrieve the element at the back of the list (const version).
   template <typename Data> inline const Data&
   List<Data>::Back() const {
 		if (!size) {
@@ -346,6 +365,7 @@ namespace lasd {
 		return tail->value;
   }
 
+  // Retrieve the element at the back of the list (non-const version).
   template <typename Data> inline Data&
   List<Data>::Back() {
 		if (!size) {
@@ -354,8 +374,7 @@ namespace lasd {
 		return tail->value;
   }
 
-// Overrided Methods
-
+  // Clear the list, making it empty.
   template <typename Data> void
   List<Data>::Clear() {
 		delete head;
@@ -363,37 +382,43 @@ namespace lasd {
 		size = 0;
   }
 
+  // Traverse the list with a given function (const version).
   template <typename Data> inline void
   List<Data>::Traverse(TraverseFun function) const {
 		PreOrderTraverse(function);
   }
 
+  // Traverse the list in pre-order with a given function (const version).
   template <typename Data> inline void
   List<Data>::PreOrderTraverse(TraverseFun function) const {
 		PreOrderTraverse(function, head);
   }
 
+  // Traverse the list in post-order with a given function (const version).
   template <typename Data> inline void
   List<Data>::PostOrderTraverse(TraverseFun function) const {
 		PostOrderTraverse(function, head);
   }
 
+  // Map the list with a given function.
   template <typename Data> inline void
   List<Data>::Map(MapFun function) {
 		PreOrderMap(function);
   }
 
+  // Map the list in pre-order with a given function.
   template <typename Data> inline void 
   List<Data>::PreOrderMap(MapFun function) {
 		PreOrderMap(function, head);
   }
 
+  // Map the list in post-order with a given function.
   template <typename Data> inline void
   List<Data>::PostOrderMap(MapFun function) {
 		PostOrderMap(function, head);
   }
 
-// Internal Methods
+  // Helper function for pre-order traversal of the list.
   template <typename Data> void
   List<Data>::PreOrderTraverse(TraverseFun function, Node* currentNode) const {
 		if (!currentNode) {
@@ -404,6 +429,7 @@ namespace lasd {
 		PreOrderTraverse(function, currentNode->next);
   }
   
+  // Helper function for post-order traversal of the list.
   template <typename Data> void
   List<Data>::PostOrderTraverse(TraverseFun function, Node* currentNode) const {
 		if (!currentNode) {
@@ -414,6 +440,7 @@ namespace lasd {
 		function(currentNode->value);
   }
 
+  // Helper function for pre-order mapping of the list.
   template <typename Data> void
   List<Data>::PreOrderMap(MapFun function, Node* currentNode) const {
 		if (!currentNode) {
@@ -424,6 +451,7 @@ namespace lasd {
 		PreOrderMap(function, currentNode->next);
   }
 
+  // Helper function for post-order mapping of the list.
   template <typename Data>
   void List<Data>::PostOrderMap(MapFun function, Node* currentNode) const {
 		if (!currentNode) {
