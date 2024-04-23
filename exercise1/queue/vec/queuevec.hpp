@@ -1,104 +1,73 @@
-
 #ifndef QUEUEVEC_HPP
 #define QUEUEVEC_HPP
-
-/* ************************************************************************** */
 
 #include "../queue.hpp"
 #include "../../vector/vector.hpp"
 
-/* ************************************************************************** */
+#define INITIAL_CAPACITY 16
+#define REDUCTION_THRESHOLD 4
+#define EXPANSION_FACTOR 2
+#define REDUCTION_FACTOR 2
 
 namespace lasd {
 
-/* ************************************************************************** */
+  template <typename Data> class QueueVec : virtual public Queue<Data>, virtual protected Vector<Data> {
+    private:
 
-template <typename Data>
-class QueueVec {
-  // Must extend Queue<Data>,
-  //             Vector<Data>
+    protected:
+      using Vector<Data>::elements;
+      using Container::size;
+      unsigned long head = 0;
+      unsigned long tail = 0;
+      unsigned long numElements = 0;
 
-private:
+    public:
+      // Default constructor
+      QueueVec();
 
-  // ...
+      // Specific constructor
+      explicit QueueVec(const TraversableContainer<Data>&);
+      explicit QueueVec(MappableContainer<Data>&&);
 
-protected:
+      // Copy constructor
+      explicit QueueVec(const QueueVec&);
 
-  // using Vector<Data>::???;
+      // Move constructor
+      explicit QueueVec(QueueVec&&) noexcept;
 
-  // ...
+      // Destructor
+      virtual ~QueueVec() = default;
 
-public:
+      // Copy assignment
+      inline QueueVec& operator=(const QueueVec&);
 
-  // Default constructor
-  // QueueVec() specifier;
+      // Move assignment
+      inline QueueVec& operator=(QueueVec&&) noexcept;
 
-  /* ************************************************************************ */
+      // Comparison operators
+      inline bool operator==(const QueueVec&) const noexcept;
+      inline bool operator!=(const QueueVec&) const noexcept;
 
-  // Specific constructor
-  // QueueVec(argument) specifiers; // A stack obtained from a TraversableContainer
-  // QueueVec(argument) specifiers; // A stack obtained from a MappableContainer
+      // Specific member functions (inherited from Queue)
+      inline const Data& Head() const override;
+      inline Data& Head() override;
+      inline void Dequeue() override;
+      inline Data HeadNDequeue() override;
+      inline void Enqueue(const Data&) override;
+      inline void Enqueue(Data&&) override;
 
-  /* ************************************************************************ */
+      // Specific member functions (inherited from Container)
+      inline bool Empty() const noexcept override;
 
-  // Copy constructor
-  // QueueVec(argument);
+      inline unsigned long Size() const noexcept override;
 
-  // Move constructor
-  // QueueVec(argument);
+      // Specific member function (inherited from ClearableContainer)
+      inline void Clear() override;
+      inline void Resize(unsigned long) override;
 
-  /* ************************************************************************ */
-
-  // Destructor
-  // ~QueueVec() specifier;
-
-  /* ************************************************************************ */
-
-  // Copy assignment
-  // type operator=(argument);
-
-  // Move assignment
-  // type operator=(argument);
-
-  /* ************************************************************************ */
-
-  // Comparison operators
-  // type operator==(argument) specifiers;
-  // type operator!=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from Queue)
-
-  // type Head() specifiers; // Override Queue member (non-mutable version; must throw std::length_error when empty)
-  // type Head() specifiers; // Override Queue member (mutable version; must throw std::length_error when empty)
-  // type Dequeue() specifiers; // Override Queue member (must throw std::length_error when empty)
-  // type HeadNDequeue() specifiers; // Override Queue member (must throw std::length_error when empty)
-  // type Enqueue(argument) specifiers; // Override Queue member (copy of the value)
-  // type Enqueue(argument) specifiers; // Override Queue member (move of the value)
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from Container)
-
-  // type Empty() specifiers; // Override Container member
-
-  // type Size() specifiers; // Override Container member
-
-  /* ************************************************************************ */
-
-  // Specific member function (inherited from ClearableContainer)
-
-  // type Clear() specifiers; // Override ClearableContainer member
-
-protected:
-
-  // Auxiliary functions, if necessary!
-
-};
-
-/* ************************************************************************** */
-
+    protected:
+      // Auxiliary functions, if necessary!
+  };
 }
 
 #include "queuevec.cpp"

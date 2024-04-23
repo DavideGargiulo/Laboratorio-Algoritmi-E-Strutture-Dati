@@ -1,96 +1,58 @@
-
 #ifndef QUEUELST_HPP
 #define QUEUELST_HPP
-
-/* ************************************************************************** */
 
 #include "../queue.hpp"
 #include "../../list/list.hpp"
 
-/* ************************************************************************** */
-
 namespace lasd {
 
-/* ************************************************************************** */
+  template <typename Data> class QueueLst : virtual public Queue<Data>, virtual protected List<Data> {
+    private:
 
-template <typename Data>
-class QueueLst {
-  // Must extend Queue<Data>,
-  //             List<Data>
+    protected:
+      using List<Data>::size;
 
-private:
+    public:
+      // Default constructor
+      QueueLst() = default;
 
-  // ...
+      // Specific constructor
+      explicit QueueLst(const TraversableContainer<Data>&);
+      explicit QueueLst(MappableContainer<Data>&&);
 
-protected:
+      // Copy constructor
+      QueueLst(const QueueLst<Data>&);
 
-  // using List<Data>::???;
+      // Move constructor
+      QueueLst(QueueLst<Data>&&) noexcept;
 
-  // ...
+      // Destructor
+      virtual ~QueueLst() = default;
 
-public:
+      // Copy assignment
+      inline QueueLst& operator=(const QueueLst&);
 
-  // Default constructor
-  // QueueLst() specifier;
+      // Move assignment
+      inline QueueLst& operator=(QueueLst&&) noexcept;
 
-  /* ************************************************************************ */
+      // Comparison operators
+      inline bool operator==(const QueueLst&) const noexcept;
+      inline bool operator!=(const QueueLst&) const noexcept;
 
-  // Specific constructor
-  // QueueLst(argument) specifiers; // A stack obtained from a TraversableContainer
-  // QueueLst(argument) specifiers; // A stack obtained from a MappableContainer
+      // Specific member functions (inherited from Queue)
+      inline const Data& Head() const override;
+      inline Data& Head() override;
+      inline void Dequeue() override;
+      inline Data HeadNDequeue() override;
+      inline void Enqueue(const Data&) override;
+      inline void Enqueue(Data&&) override;
 
-  /* ************************************************************************ */
+      // Specific member function (inherited from ClearableContainer)
+      using List<Data>::Clear;
 
-  // Copy constructor
-  // QueueLst(argument);
-
-  // Move constructor
-  // QueueLst(argument);
-
-  /* ************************************************************************ */
-
-  // Destructor
-  // ~QueueLst() specifier;
-
-  /* ************************************************************************ */
-
-  // Copy assignment
-  // type operator=(argument);
-
-  // Move assignment
-  // type operator=(argument);
-
-  /* ************************************************************************ */
-
-  // Comparison operators
-  // type operator==(argument) specifiers;
-  // type operator!=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from Queue)
-
-  // type Head() specifiers; // Override Queue member (non-mutable version; must throw std::length_error when empty)
-  // type Head() specifiers; // Override Queue member (mutable version; must throw std::length_error when empty)
-  // type Dequeue() specifiers; // Override Queue member (must throw std::length_error when empty)
-  // type HeadNDequeue() specifiers; // Override Queue member (must throw std::length_error when empty)
-  // type Enqueue(argument) specifiers; // Override Queue member (copy of the value)
-  // type Enqueue(argument) specifiers; // Override Queue member (move of the value)
-
-  /* ************************************************************************ */
-
-  // Specific member function (inherited from ClearableContainer)
-
-  // using List<Data>::Clear;
-
-protected:
-
-  // Auxiliary functions, if necessary!
-
-};
-
-/* ************************************************************************** */
-
+    protected:
+      // Auxiliary functions, if necessary!
+  };
 }
 
 #include "queuelst.cpp"
