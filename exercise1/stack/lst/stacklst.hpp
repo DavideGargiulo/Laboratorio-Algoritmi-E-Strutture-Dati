@@ -1,96 +1,59 @@
-
 #ifndef STACKLST_HPP
 #define STACKLST_HPP
-
-/* ************************************************************************** */
 
 #include "../stack.hpp"
 #include "../../list/list.hpp"
 
-/* ************************************************************************** */
-
 namespace lasd {
 
-/* ************************************************************************** */
+  template <typename Data> class StackLst : virtual public Stack<Data>, virtual protected List<Data> {
+    private:
 
-template <typename Data>
-class StackLst {
-  // Must extend Stack<Data>,
-  //             List<Data>
+    protected:
+      using List<Data>::size;
 
-private:
+    public:
+      // Default constructor
+      StackLst() = default;
 
-  // ...
+      // Specific constructor
+      StackLst(const TraversableContainer<Data>&);
+      StackLst(MappableContainer<Data>&&);
+      
 
-protected:
+      // Copy constructor
+      inline StackLst(const StackLst&);
 
-  // using List<Data>::???;
+      // Move constructor
+      inline StackLst(StackLst&&);
 
-  // ...
+      // Destructor
+      virtual ~StackLst() = default;
 
-public:
+      // Copy assignment
+      StackLst& operator=(const StackLst&);
 
-  // Default constructor
-  // StackLst() specifier;
+      // Move assignment
+      StackLst& operator=(StackLst&&) noexcept;
 
-  /* ************************************************************************ */
+      // Comparison operators
+      inline bool operator==(const StackLst&) const noexcept;
+      inline bool operator!=(const StackLst&) const noexcept;
 
-  // Specific constructor
-  // StackLst(argument) specifiers; // A stack obtained from a TraversableContainer
-  // StackLst(argument) specifiers; // A stack obtained from a MappableContainer
+      // Specific member functions (inherited from Stack)
+      inline const Data& Top() const override;
+      inline Data& Top() override;
+      inline void Pop() override;
+      inline Data TopNPop() override;
+      inline void Push(const Data&) override;
+      inline void Push(Data&&) override;
 
-  /* ************************************************************************ */
+      // Specific member function (inherited from ClearableContainer)
+      using List<Data>::Clear;
 
-  // Copy constructor
-  // StackLst(argument);
-
-  // Move constructor
-  // StackLst(argument);
-
-  /* ************************************************************************ */
-
-  // Destructor
-  // ~StackLst() specifier;
-
-  /* ************************************************************************ */
-
-  // Copy assignment
-  // type operator=(argument);
-
-  // Move assignment
-  // type operator=(argument);
-
-  /* ************************************************************************ */
-
-  // Comparison operators
-  // type operator==(argument) specifiers;
-  // type operator!=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from Stack)
-
-  // type Top() specifiers; // Override Stack member (non-mutable version; must throw std::length_error when empty)
-  // type Top() specifiers; // Override Stack member (non-mutable version; must throw std::length_error when empty)
-  // type Pop() specifiers; // Override Stack member (must throw std::length_error when empty)
-  // type TopNPop() specifiers; // Override Stack member (must throw std::length_error when empty)
-  // type Push(argument) specifiers; // Override Stack member (copy of the value)
-  // type Push(argument) specifiers; // Override Stack member (move of the value)
-
-  /* ************************************************************************ */
-
-  // Specific member function (inherited from ClearableContainer)
-
-  // using List<Data>::Clear;
-
-protected:
-
-  // Auxiliary functions, if necessary!
-
-};
-
-/* ************************************************************************** */
-
+    protected:
+      // Auxiliary functions, if necessary!
+  };
 }
 
 #include "stacklst.cpp"
