@@ -11,10 +11,10 @@ namespace lasd {
     private:
       
     protected:
-      
-    public:
       using Container::size;
-      Data *elements = nullptr;
+      Data* elements = nullptr;
+
+    public:
       // Default constructor
       Vector() = default;
 
