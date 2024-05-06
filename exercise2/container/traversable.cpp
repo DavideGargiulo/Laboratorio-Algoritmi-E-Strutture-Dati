@@ -38,4 +38,22 @@ namespace lasd {
     });
     return base;
   }
+
+  template <typename Data>
+  template <typename Accumulator> inline Accumulator
+  InOrderTraversableContainer<Data>::InOrderFold(FoldFun<Accumulator> function, Accumulator base) const {
+    InOrderTraverse([&base, &function](const Data &currentData) { 
+      base = function(currentData, base); 
+    });
+    return base;
+  }
+
+  template <typename Data>
+  template <typename Accumulator> inline Accumulator
+  BreadthTraversableContainer<Data>::BreadthFold(FoldFun<Accumulator> function, Accumulator base) const {
+    BreadthTraverse([&base, &function](const Data &currentData) { 
+      base = function(currentData, base); 
+    });
+    return base;
+  }
 }

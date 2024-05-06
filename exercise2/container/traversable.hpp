@@ -120,7 +120,6 @@ namespace lasd {
     private:
 
     protected:
-      // ...
 
     public:
       // Destructor
@@ -145,7 +144,7 @@ namespace lasd {
       using FoldFun = typename TraversableContainer<Data>::FoldFun<Accumulator>;
 
       template <typename Accumulator>
-      inline Accumulator PostOrderFold(FoldFun<Accumulator> function, Accumulator base) const;
+      inline Accumulator InOrderFold(FoldFun<Accumulator> function, Accumulator base) const;
 
       // Specific member function (inherited from TraversableContainer)
       inline void Traverse(const TraverseFun function) const override{

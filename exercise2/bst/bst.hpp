@@ -1,23 +1,15 @@
-
 #ifndef BST_HPP
 #define BST_HPP
 
-/* ************************************************************************** */
-
 #include "../binarytree/lnk/binarytreelnk.hpp"
-
-/* ************************************************************************** */
 
 namespace lasd {
 
-/* ************************************************************************** */
-
 template <typename Data>
-class BST {
-  // Must extend ClearableContainer,
-  //             DictionaryContainer<Data>,
-  //             BinaryTree<Data>,
-  //             BinaryTreeLnk<Data>
+class BST : virtual public ClearableContainer, 
+            virtual public DictionaryContainer<Data>, 
+            virtual public BinaryTree<Data>, 
+            virtual public BinaryTreeLnk<Data> {
 
 private:
 
@@ -137,7 +129,7 @@ protected:
 
 };
 
-/* ************************************************************************** */
+
 
 }
 
