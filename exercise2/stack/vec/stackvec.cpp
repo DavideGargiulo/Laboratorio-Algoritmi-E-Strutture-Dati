@@ -24,7 +24,7 @@ namespace lasd {
 
   // Copy constructor: Initializes the stack as a copy of another stack.
   template <typename Data>
-  StackVec<Data>::StackVec(const StackVec<Data>& stack) : Vector<Data>(stack), topIndex(stack.topIndex) {}
+   StackVec<Data>::StackVec(const StackVec<Data>& stack) : Vector<Data>(stack), topIndex(stack.topIndex) {}
 
   // Move constructor: Initializes the stack by moving the contents of another stack.
   template <typename Data>

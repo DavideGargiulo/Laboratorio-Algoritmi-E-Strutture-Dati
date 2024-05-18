@@ -17,20 +17,20 @@ namespace lasd {
     protected:
       using Container::size;
       using Vector<Data>::elements;
-      unsigned long topIndex = 0;
+      unsigned long topIndex{0};
     public:
       // Default constructor
       StackVec();
 
       // Specific constructor
-      explicit StackVec(const TraversableContainer<Data>&);
-      explicit StackVec(MappableContainer<Data>&&);
+      StackVec(const TraversableContainer<Data>&);
+      StackVec(MappableContainer<Data>&&);
 
       // Copy constructor
-      explicit StackVec(const StackVec&);
+      StackVec(const StackVec&);
 
       // Move constructor
-      explicit StackVec(StackVec&&) noexcept;
+      StackVec(StackVec&&) noexcept;
 
       // Destructor
       virtual ~StackVec() = default;

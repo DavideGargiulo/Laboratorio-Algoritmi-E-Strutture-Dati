@@ -26,14 +26,14 @@ namespace lasd {
       QueueVec();
 
       // Specific constructor
-      explicit QueueVec(const TraversableContainer<Data>&);
-      explicit QueueVec(MappableContainer<Data>&&);
+      QueueVec(const TraversableContainer<Data>&);
+      QueueVec(MappableContainer<Data>&&);
 
       // Copy constructor
-      explicit QueueVec(const QueueVec&);
+      QueueVec(const QueueVec&);
 
       // Move constructor
-      explicit QueueVec(QueueVec&&) noexcept;
+      QueueVec(QueueVec&&) noexcept;
 
       // Destructor
       virtual ~QueueVec() = default;

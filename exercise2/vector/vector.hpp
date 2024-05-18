@@ -27,10 +27,10 @@ namespace lasd {
       Vector(MappableContainer<Data>&&);
 
       // Copy constructor
-      explicit Vector(const Vector<Data>&);
+      Vector(const Vector<Data>&);
 
       // Move constructor
-      explicit Vector(Vector<Data>&&) noexcept;
+      Vector(Vector<Data>&&) noexcept;
 
       // Destructor
       virtual ~Vector() { 

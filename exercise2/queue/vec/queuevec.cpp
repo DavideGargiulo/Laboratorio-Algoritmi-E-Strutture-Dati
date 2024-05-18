@@ -4,7 +4,7 @@
 namespace lasd {
 
   template <typename Data>
-  QueueVec<Data>::QueueVec() : Vector<Data>::Vector(INITIAL_CAPACITY) {}
+  QueueVec<Data>::QueueVec() : Vector<Data>::Vector(16) {};
 
   // Copy constructor from Different DataStructures
   template <typename Data>

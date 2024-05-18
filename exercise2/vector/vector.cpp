@@ -21,7 +21,9 @@ namespace lasd {
 
   template <typename Data> inline
   Vector<Data>::Vector(const Vector<Data>& vector) : Vector(vector.size) {
-    std::uninitialized_copy(vector.elements, vector.elements + size, elements);
+    for (unsigned long i = 0; i < size; ++i) {
+      elements[i] = vector.elements[i];
+    }
   }
 
   template <typename Data> inline
