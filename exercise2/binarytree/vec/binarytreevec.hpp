@@ -1,122 +1,102 @@
-
 #ifndef BINARYTREEVEC_HPP
 #define BINARYTREEVEC_HPP
-
-/* ************************************************************************** */
 
 #include "../binarytree.hpp"
 #include "../../vector/vector.hpp"
 
-/* ************************************************************************** */
-
 namespace lasd {
 
-/* ************************************************************************** */
+  template <typename Data>
+  class BinaryTreeVec : virtual public MutableBinaryTree<Data> {
 
-template <typename Data>
-class BinaryTreeVec {
-  // Must extend MutableBinaryTree<Data>
+    private:
 
-private:
+    protected:
+      using typename BinaryTree<Data>::Node;
+      using typename MutableBinaryTree<Data>::MutableNode;
 
-  // ...
+      struct NodeVec : MutableNode {
 
-protected:
+        private:
 
-  // ...
+        protected:
+          Data element;
+          ulong index{0};
+          BinaryTreeVec* parent{nullptr};
 
-  struct NodeVec { // Must extend MutableNode
+        public:
+          friend class BinaryTreeVec<Data>;
 
-  private:
+          NodeVec() = default;
+          NodeVec(const Data& data);
+          NodeVec(Data&& data) noexcept;
 
-    // ...
+          NodeVec(const NodeVec& node);
+          NodeVec(NodeVec&& node) noexcept;
 
-  protected:
+          virtual ~NodeVec() = default;
 
-    // ...
+          const Data& Element() const noexcept override;
+          Data& Element() noexcept override;
+          inline bool HasLeftChild() const noexcept override;
+          inline bool HasRightChild() const noexcept override;
+          const Node& LeftChild() const override;
+          const Node& RightChild() const override;
+          MutableNode& LeftChild() override;
+          MutableNode& RightChild() override;
+        };
 
-  public:
+        using MutableBinaryTree<Data>::size;
+        Vector<NodeVec*> *tree{nullptr};
 
-    // ...
+    public:
 
+      // Default constructor
+      BinaryTreeVec() = default;
+
+      // Specific constructors
+      BinaryTreeVec(const TraversableContainer<Data>&);
+      BinaryTreeVec(MappableContainer<Data>&&);
+
+      // Copy constructor
+      BinaryTreeVec(const BinaryTreeVec&);
+
+      // Move constructor
+      BinaryTreeVec(BinaryTreeVec&&) noexcept;
+
+      // Destructor
+      virtual ~BinaryTreeVec();
+
+      // Copy assignment
+      BinaryTreeVec& operator=(const BinaryTreeVec&);
+
+      // Move assignment
+      BinaryTreeVec& operator=(BinaryTreeVec&&) noexcept;
+
+      // Comparison operators
+      inline bool operator==(const BinaryTreeVec<Data>&) const noexcept;
+      inline bool operator!=(const BinaryTreeVec<Data>&) const noexcept;
+
+      // Specific member functions (inherited from BinaryTree)
+      const Node& Root() const override;
+
+      // Specific member function (inherited from MutableBinaryTree)
+      MutableNode& Root() override;
+
+      // Specific member function (inherited from ClearableContainer)
+      void Clear() override;
+
+      // Specific member function (inherited from BreadthTraversableContainer)
+      using typename TraversableContainer<Data>::TraverseFun;
+      void BreadthTraverse(TraverseFun) const override;
+
+      // Specific member function (inherited from BreadthMappableContainer)
+      using typename MappableContainer<Data>::MapFun;
+      void BreadthMap(MapFun) override;
+
+    protected:
+      // Auxiliary functions, if necessary!
   };
-
-public:
-
-  // Default constructor
-  // BinaryTreeVec() specifiers;
-
-  /* ************************************************************************ */
-
-  // Specific constructors
-  // BinaryTreeVec(argument) specifiers; // A binary tree obtained from a TraversableContainer
-  // BinaryTreeVec(argument) specifiers; // A binary tree obtained from a MappableContainer
-
-  /* ************************************************************************ */
-
-  // Copy constructor
-  // BinaryTreeVec(argument) specifiers;
-
-  // Move constructor
-  // BinaryTreeVec(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Destructor
-  // ~BinaryTreeVec() specifiers;
-
-  /* ************************************************************************ */
-
-  // Copy assignment
-  // type operator=(argument) specifiers;
-
-  // Move assignment
-  // type operator=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Comparison operators
-  // type operator==(argument) specifiers;
-  // type operator!=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from BinaryTree)
-
-  // type Root() specifiers; // Override BinaryTree member (throw std::length_error when empty)
-
-  /* ************************************************************************ */
-
-  // Specific member function (inherited from MutableBinaryTree)
-
-  // type Root() specifiers; // Override MutableBinaryTree member (throw std::length_error when empty)
-
-  /* ************************************************************************ */
-
-  // Specific member function (inherited from ClearableContainer)
-
-  // type Clear() specifiers; // Override ClearableContainer member
-
-  /* ************************************************************************ */
-
-  // Specific member function (inherited from BreadthTraversableContainer)
-
-  // type BreadthTraverse(arguments) specifiers; // Override BreadthTraversableContainer member
-
-  /* ************************************************************************ */
-
-  // Specific member function (inherited from BreadthMappableContainer)
-
-  // type BreadthMap(arguments) specifiers; // Override BreadthMappableContainer member
-
-protected:
-
-  // Auxiliary functions, if necessary!
-
-};
-
-/* ************************************************************************** */
-
 }
 
 #include "binarytreevec.cpp"
