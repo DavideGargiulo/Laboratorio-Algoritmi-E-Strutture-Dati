@@ -109,7 +109,7 @@ namespace lasd {
       InOrderMappableContainer& operator=(const InOrderMappableContainer&) = delete;
 
       // Move assignment
-      InOrderMapableContainer& operator=(InOrderMappableContainer&&) noexcept = delete;
+      InOrderMappableContainer& operator=(InOrderMappableContainer&&) noexcept = delete;
 
       // Comparison operators
       bool operator==(const InOrderMappableContainer&) const noexcept = delete;
