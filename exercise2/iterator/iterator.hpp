@@ -45,8 +45,8 @@ namespace lasd {
       MutableIterator& operator=(MutableIterator&&) = delete;
 
       // Comparison operators
-      bool operator==(const MutableIterator&) const noexcept = delete;
-      bool operator!=(const MutableIterator&) const noexcept = delete;
+      bool operator==(const MutableIterator&) const = delete;
+      bool operator!=(const MutableIterator&) const = delete;
 
       // Specific member functions
       virtual Data& operator*() = 0;
@@ -69,15 +69,15 @@ namespace lasd {
       ForwardIterator& operator=(ForwardIterator&&) = delete;
 
       // Comparison operators
-      bool operator==(const ForwardIterator&) const noexcept = delete;
-      bool operator!=(const ForwardIterator&) const noexcept = delete;
+      bool operator==(const ForwardIterator&) const = delete;
+      bool operator!=(const ForwardIterator&) const = delete;
 
       // Specific member functions
       virtual ForwardIterator& operator++() = 0;
   };
 
   template <typename Data>
-  class ResettableIterator : public Iterator<Data> {
+  class ResettableIterator : virtual public Iterator<Data> {
     private:
 
     protected:
@@ -93,11 +93,11 @@ namespace lasd {
       ResettableIterator& operator=(ResettableIterator&&) = delete;
 
       // Comparison operators
-      bool operator==(const ResettableIterator&) const noexcept = delete;
-      bool operator!=(const ResettableIterator&) const noexcept = delete;
+      bool operator==(const ResettableIterator&) const = delete;
+      bool operator!=(const ResettableIterator&) const = delete;
 
       // Specific member functions
-      virtual void Reset() = 0;
+      virtual void Reset() noexcept = 0;
   };
 }
 
