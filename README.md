@@ -79,8 +79,23 @@ Develop two C++ libraries for managing dynamic data structures of binary trees a
    - Insertion/deletion of elements.
    - Removal, removal with read, and non-destructive read of the minimum/maximum element or the predecessor/successor of a given element.
 
-### Exercise 3: Hashmap TBD (To Be Determined)
-Details for this exercise have not yet been provided. This section will be updated once the professor releases the specific requirements and objectives for Exercise 3. Please check back later or watch for updates on this repository.
+### Exercise 3: Implementing a Hash Table Library
+Develop a C++ library for managing a dynamic hash table data structure containing generic data types such as integers, strings, etc. This structure should be implemented using the following two conflict resolution techniques:
+1. Closed addressing / open hashing / chaining.
+2. Open addressing / closed hashing.
+
+#### Functional Requirements
+1. **Construction and Destruction**: Build and teardown of the data structure.
+2. **Assignment and Comparison**: Perform assignment and comparison operations between different instances of the data structure.
+3. **Specific Operations of the Data Structure**: 
+   - Table resizing.
+   - Dictionary management operations.
+4. **Generic Operations on the Data Structure**:
+   - Existence check for a specific value.
+   - Emptiness test.
+   - Size reading.
+   - Clearing the structure.
+
 
 ## Credits
 
