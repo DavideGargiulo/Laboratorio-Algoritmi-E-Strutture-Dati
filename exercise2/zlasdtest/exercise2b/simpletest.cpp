@@ -1,4 +1,3 @@
-
 #include <iostream>
 
 /* ************************************************************************** */
@@ -26,7 +25,7 @@ using namespace std;
 
 /* ************************************************************************** */
 
-/*void stestBSTInt(uint & testnum, uint & testerr) {
+void stestBSTInt(uint & testnum, uint & testerr) {
   uint loctestnum = 0, loctesterr = 0;
   cout << endl << "Begin of BST<int> Test" << endl;
   try {
@@ -54,9 +53,11 @@ using namespace std;
     Max(loctestnum, loctesterr, bst, true, 5);
 
     Root(loctestnum, loctesterr, bst, true, 3);
-
+    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
     RemoveMin(loctestnum, loctesterr, bst, true);
+    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
     MinNRemove(loctestnum, loctesterr, bst, true, 1);
+    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
 
     InsertC(loctestnum, loctesterr, bst, true, -1);
     InsertC(loctestnum, loctesterr, bst, true, 1);
@@ -66,7 +67,7 @@ using namespace std;
     Size(loctestnum, loctesterr, bst, true, 5);
 
     InsertC(loctestnum, loctesterr, bst, true, 6);
-
+    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
     Size(loctestnum, loctesterr, bst, true, 6);
 
     Max(loctestnum, loctesterr, bst, true, 6);
@@ -89,7 +90,6 @@ using namespace std;
 
     RemoveMax(loctestnum, loctesterr, bst, true);
     Max(loctestnum, loctesterr, bst, true, 6);
-
     TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
 
     Predecessor(loctestnum, loctesterr, bst, true, 4, 3);
@@ -108,9 +108,12 @@ using namespace std;
 
     lasd::BST<int> bst1(bst);
 
+    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
+    TraverseInOrder(loctestnum, loctesterr, bst1, true, &TraversePrint<int>);
     EqualBST(loctestnum, loctesterr, bst, bst1);
 
     Remove(loctestnum, loctesterr, bst1, true, 4);
+    TraverseInOrder(loctestnum, loctesterr, bst1, true, &TraversePrint<int>);
 
     NonEqualBST(loctestnum, loctesterr, bst, bst1);
 
@@ -268,12 +271,12 @@ void stestBSTString(uint & testnum, uint & testerr) {
   testnum += loctestnum;
   testerr += loctesterr;
 }
-*/
+
 /* ************************************************************************** */
 
 void testSimpleExercise2B(uint & testnum, uint & testerr) {
-  //stestBSTInt(testnum, testerr);
-  //stestBSTFloat(testnum, testerr);
-  //stestBSTString(testnum, testerr);
+  stestBSTInt(testnum, testerr);
+  stestBSTFloat(testnum, testerr);
+  stestBSTString(testnum, testerr);
   cout << endl << "Exercise 2B (Simple Test) (Errors/Tests: " << testerr << "/" << testnum << ")" << endl;
 }

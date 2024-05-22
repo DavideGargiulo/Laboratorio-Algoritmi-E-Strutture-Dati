@@ -197,10 +197,8 @@ namespace lasd {
 
   template <typename Data> void
   BinaryTreeLnk<Data>::Clear() {
-    if (root != nullptr) {
-      delete root;
-      root = nullptr;
-      size = 0;
-    }
+    delete root;
+    root = nullptr;
+    size = 0;
   }
 }

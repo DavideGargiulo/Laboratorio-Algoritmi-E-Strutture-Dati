@@ -15,13 +15,14 @@ namespace lasd {
 
       struct NodeLnk : MutableNode{
         private:
-          Data element;
-          NodeLnk* leftChild{nullptr};
-          NodeLnk* rightChild{nullptr};
 
         protected:
 
         public:
+          Data element;
+          NodeLnk* leftChild{nullptr};
+          NodeLnk* rightChild{nullptr};
+
           friend class BinaryTreeLnk<Data>;
 
           NodeLnk() = default;

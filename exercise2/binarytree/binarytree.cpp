@@ -62,12 +62,11 @@ namespace lasd {
   BinaryTree<Data>::PreOrderTraverse(const Node* node, TraverseFun function) const {
     if (node != nullptr) {
       function(node->Element());
-      //std::cout << node->Element() << std::endl;
       if (node->HasLeftChild()) {
-        PreOrderTraverse(&node->LeftChild(), function);
+        PreOrderTraverse(&(node->LeftChild()), function);
       }
       if (node->HasRightChild()) {
-        PreOrderTraverse(&node->RightChild(), function);
+        PreOrderTraverse(&(node->RightChild()), function);
       }
     }
   }
@@ -390,7 +389,7 @@ namespace lasd {
     return current == nullptr;
   }
 
-  template <typename Data> BTPostOrderIterator<Data>& // TODO Cambiarla, funziona però è brutta
+  template <typename Data> BTPostOrderIterator<Data>&
   BTPostOrderIterator<Data>::operator++() {
     if (Terminated()) {
       throw std::out_of_range("Iterator out of range");
