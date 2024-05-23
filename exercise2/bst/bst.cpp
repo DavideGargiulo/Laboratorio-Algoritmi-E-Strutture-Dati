@@ -42,19 +42,6 @@ namespace lasd {
       return false;
     }
 
-    std::cout << size << std::endl;
-    std::cout << binarySearchTree.size << std::endl;
-
-    this->InOrderTraverse([&](const Data& data) {
-      std::cout << data << " -> ";
-    });
-    std::cout << std::endl;
-
-    binarySearchTree.InOrderTraverse([&](const Data& data) {
-      std::cout << data << " -> ";
-    });
-    std::cout << std::endl;
-
     BTInOrderIterator<Data> iterator1{*this};
     BTInOrderIterator<Data> iterator2{binarySearchTree};
 
