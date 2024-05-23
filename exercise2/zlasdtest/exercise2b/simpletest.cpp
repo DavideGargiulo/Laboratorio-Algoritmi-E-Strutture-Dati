@@ -1,3 +1,4 @@
+
 #include <iostream>
 
 /* ************************************************************************** */
@@ -53,11 +54,9 @@ void stestBSTInt(uint & testnum, uint & testerr) {
     Max(loctestnum, loctesterr, bst, true, 5);
 
     Root(loctestnum, loctesterr, bst, true, 3);
-    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
+
     RemoveMin(loctestnum, loctesterr, bst, true);
-    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
     MinNRemove(loctestnum, loctesterr, bst, true, 1);
-    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
 
     InsertC(loctestnum, loctesterr, bst, true, -1);
     InsertC(loctestnum, loctesterr, bst, true, 1);
@@ -67,7 +66,7 @@ void stestBSTInt(uint & testnum, uint & testerr) {
     Size(loctestnum, loctesterr, bst, true, 5);
 
     InsertC(loctestnum, loctesterr, bst, true, 6);
-    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
+
     Size(loctestnum, loctesterr, bst, true, 6);
 
     Max(loctestnum, loctesterr, bst, true, 6);
@@ -90,6 +89,7 @@ void stestBSTInt(uint & testnum, uint & testerr) {
 
     RemoveMax(loctestnum, loctesterr, bst, true);
     Max(loctestnum, loctesterr, bst, true, 6);
+
     TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
 
     Predecessor(loctestnum, loctesterr, bst, true, 4, 3);
@@ -108,12 +108,9 @@ void stestBSTInt(uint & testnum, uint & testerr) {
 
     lasd::BST<int> bst1(bst);
 
-    TraverseInOrder(loctestnum, loctesterr, bst, true, &TraversePrint<int>);
-    TraverseInOrder(loctestnum, loctesterr, bst1, true, &TraversePrint<int>);
     EqualBST(loctestnum, loctesterr, bst, bst1);
 
     Remove(loctestnum, loctesterr, bst1, true, 4);
-    TraverseInOrder(loctestnum, loctesterr, bst1, true, &TraversePrint<int>);
 
     NonEqualBST(loctestnum, loctesterr, bst, bst1);
 
