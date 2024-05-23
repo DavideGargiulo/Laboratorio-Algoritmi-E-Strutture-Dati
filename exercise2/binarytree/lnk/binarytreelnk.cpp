@@ -4,11 +4,15 @@ namespace lasd {
   template <typename Data>
   BinaryTreeLnk<Data>::NodeLnk::NodeLnk(const Data& data) {
     element = data;
+    leftChild = nullptr;
+    rightChild = nullptr;
   }
 
   template <typename Data>
   BinaryTreeLnk<Data>::NodeLnk::NodeLnk(Data&& data) noexcept {
     element = std::move(data);
+    leftChild = nullptr;
+    rightChild = nullptr;
   }
 
   template <typename Data>
@@ -27,8 +31,12 @@ namespace lasd {
 
   template <typename Data>
   BinaryTreeLnk<Data>::NodeLnk::~NodeLnk() {
-    delete leftChild;
-    delete rightChild;
+    if (leftChild != nullptr) {
+      delete leftChild;
+    }
+    if (rightChild != nullptr) {
+      delete rightChild;
+    }
   }
 
   template <typename Data> const Data&

@@ -475,7 +475,7 @@ namespace lasd {
   // BTInOrderIterator
   template <typename Data>
   BTInOrderIterator<Data>::BTInOrderIterator(const BinaryTree<Data>& tree) {
-    if (&tree.Root() != nullptr) {
+    if (!tree.Empty() ){
       root = &tree.Root();
       current = root;
       getLeafMostNode();
