@@ -42,20 +42,32 @@ namespace lasd {
       return false;
     }
 
-    QueueVec<Data> queue;
-    this->InOrderTraverse([&queue](const Data& data) {
-      queue.Enqueue(data);
+    std::cout << size << std::endl;
+    std::cout << binarySearchTree.size << std::endl;
+
+    this->InOrderTraverse([&](const Data& data) {
+      std::cout << data << " -> ";
     });
+    std::cout << std::endl;
 
-    bool isEqual = true;
+    binarySearchTree.InOrderTraverse([&](const Data& data) {
+      std::cout << data << " -> ";
+    });
+    std::cout << std::endl;
 
-    binarySearchTree.InOrderTraverse([&queue, &isEqual](const Data& data) {
-      if (queue.HeadNDequeue() != data) {
-        isEqual = false;
+    BTInOrderIterator<Data> iterator1{*this};
+    BTInOrderIterator<Data> iterator2{binarySearchTree};
+
+    while (!iterator1.Terminated()) {
+      std::cout << "sium" << std::endl;
+      if (*iterator1 != *iterator2) {
+        return false;
       }
-    });
+      ++iterator1;
+      ++iterator2;
+    }
 
-    return isEqual;
+    return true;
   }
 
   template <typename Data> inline bool
@@ -78,9 +90,8 @@ namespace lasd {
       throw std::length_error("The tree is empty");
     }
 
-    NodeLnk* minNode = DetachMin(root, nullptr);
-    Data minData = minNode->Element();
-    size--;
+    Data minData = Min();
+    Remove(minData);
     return minData;
   }
 
@@ -90,9 +101,7 @@ namespace lasd {
       throw std::length_error("The tree is empty");
     }
 
-    NodeLnk* minNode = DetachMin(root, nullptr);
-    size--;
-    delete minNode;
+    Remove(Min());
   }
 
   template <typename Data> const Data&
@@ -110,11 +119,9 @@ namespace lasd {
       throw std::length_error("The tree is empty");
     }
 
-    NodeLnk* maxNode = DetachMax(root, nullptr);
-    Data maxData = maxNode->Element();
-    delete maxNode;
-    size--;
-    return maxData;
+    Data minData = Max();
+    Remove(minData);
+    return minData;
   }
 
   template <typename Data> void
@@ -123,9 +130,7 @@ namespace lasd {
       throw std::length_error("The tree is empty");
     }
 
-    NodeLnk* maxNode = DetachMax(root, nullptr);
-    size--;
-    delete maxNode;
+    Remove(Max());
   }
 
   template <typename Data> const Data&
@@ -152,7 +157,7 @@ namespace lasd {
     if (!predecessorNode) {
       throw std::invalid_argument("The element has no predecessor");
     }
-    size--;
+    
     return DataNDelete(predecessorNode);
   }
 
@@ -166,7 +171,7 @@ namespace lasd {
     if (!predecessorNode) {
       throw std::invalid_argument("The element has no predecessor");
     }
-    size--;
+    
     Remove(predecessorNode->Element());
   }
 
@@ -194,7 +199,7 @@ namespace lasd {
     if (!successorNode) {
       throw std::invalid_argument("The element has no successor");
     }
-    size--;
+    
     return DataNDelete(successorNode);
   }
 
@@ -208,7 +213,7 @@ namespace lasd {
     if (!successorNode) {
       throw std::invalid_argument("The element has no successor");
     }
-    size--;
+    
     Remove(successorNode->Element());
   }
 
@@ -223,79 +228,31 @@ namespace lasd {
 
   template <typename Data>
   bool BST<Data>::Insert(const Data& data) {
-    std::unique_ptr<NodeLnk> newNode = std::make_unique<NodeLnk>(data);
-    return InsertElement(root, newNode.release());
+    ulong tsize = size;
+
+    root = InsertElement(root, data);
+    return tsize != size;
   }
 
   template <typename Data>
   bool BST<Data>::Insert(Data&& data) {
-    std::unique_ptr<NodeLnk> newNode = std::make_unique<NodeLnk>(std::move(data));
-    return InsertElement(root, newNode.release());
+    ulong tsize = size;
+
+    root = InsertElement(root, data);
+    return tsize != size;
   }
 
-
-  template <typename Data>
-  bool BST<Data>::InsertElement(NodeLnk*& node, NodeLnk* newNode) {
+  template <typename Data>  typename BinaryTreeLnk<Data>::NodeLnk*
+  BST<Data>::InsertElement( NodeLnk* node, const Data& data)  {
     if (node == nullptr) {
-      node = newNode;
+      node = new NodeLnk(data);
       size++;
-      return true;
-    } else if (node->Element() < newNode->Element()) {
-      return InsertElement(node->rightChild, newNode);
-    } else {
-      return InsertElement(node->leftChild, newNode);
-    }
-  }
-
-
-  template <typename Data> typename BinaryTreeLnk<Data>::NodeLnk* 
-  BST<Data>::Detach(NodeLnk** current) {
-    if (current == nullptr) {
-      throw std::logic_error("Current is null");
-    }
-
-    NodeLnk* result = nullptr; 
-
-    if ((*current) != nullptr) {
-      if (!((*current)->HasLeftChild())) {
-        result = (*current)->rightChild;
-      } else if (!((*current)->HasRightChild())) {
-          result = (*current)->leftChild;
-      } else {
-        NodeLnk* min = DetachMin((*current)->rightChild, (*current)); 
-        (*current)->Element() = min->Element(); 
-      }
-      
-      (*current)->leftChild = nullptr;
-      (*current)->rightChild = nullptr;
-      delete (*current);
-      *current = nullptr;
-    }
-    return result;
-  }
-
-  template <typename Data> typename BinaryTreeLnk<Data>::NodeLnk*
-  BST<Data>::DetachMin(NodeLnk* current, NodeLnk* predecessor) {
-    if (current != nullptr) {
-        if (current->HasLeftChild()) {
-          return DetachMin(current->leftChild, current);
-        } else {
-          NodeLnk* minNode = current;
-
-          if (predecessor != nullptr) {   
-            if (current == (predecessor->leftChild)) {
-              predecessor->leftChild = current->rightChild;
-            }
-            else {
-              predecessor->rightChild = current->rightChild;
-            }
-          }
-          minNode->rightChild = nullptr;
-          return minNode;
-        }
-    } else {
-      throw std::length_error ("The tree is empty");
-    }
+    } else if (node->Element() < data) {
+      node->rightChild = InsertElement(node->rightChild, data);
+    } else if(node->Element() > data) {
+      node->leftChild = InsertElement(node->leftChild, data); 
+    } 
+    return node;
   }
 
   template <typename Data> typename BinaryTreeLnk<Data>::NodeLnk*
@@ -314,6 +271,7 @@ namespace lasd {
             }
           }
           maxNode->leftChild = nullptr;
+          size--;
           return maxNode;
         }
     } else {
@@ -323,35 +281,65 @@ namespace lasd {
 
   template <typename Data> bool
   BST<Data>::Remove(const Data& data) {
-    bool result = false;
-    try {
-      result = Remove(data, &(root));
-    } catch (std::exception & e) {
-      throw;
-    }
-    return result;     
+    ulong tsize = size;
+    root = RemoveElement(root, data);
+    return tsize != size;
   }
 
-  template <typename Data> bool
-  BST<Data>::Remove(const Data& data, NodeLnk** current) {
-    if ((*current) != nullptr) {
-      if ((*current)->Element() < data) {
-        return Remove(data, &((*current)->rightChild));
-      } else if ((*current)->Element() > data) {
-        return Remove (data, &((*current)->leftChild));
+  template <typename Data> typename BinaryTreeLnk<Data>::NodeLnk*
+  BST<Data>::RemoveElement(NodeLnk* node, const Data& data) {
+    NodeLnk* result = node;
+    if (node != nullptr) {
+      if (node->Element() < data) {
+        node->rightChild = RemoveElement(node->rightChild, data);
+      } else if (node->Element() > data) {
+        node->leftChild = RemoveElement(node->leftChild, data);
       } else {
-        try {
-          *current = Detach(current);
-        } catch (std::exception & exc) {
-          std::cerr<<exc.what();
-          return false;
-        }
-        return true;
+        result = deleteRoot(node);
       }
-    } else {
-      return false;
-    } 
-}
+    }
+    return result;
+  }
+
+  template <typename Data> typename BinaryTreeLnk<Data>::NodeLnk*
+  BST<Data>::deleteRoot(NodeLnk* node) {
+    NodeLnk* result = node;
+    if (node != nullptr) {
+      NodeLnk* tmp = node;
+      if (node->leftChild == nullptr) {
+        result = node->rightChild;
+        node->rightChild = nullptr;
+      } else if (node->rightChild == nullptr) {
+        result = node->leftChild;
+        node->leftChild = nullptr;
+      } else {
+        tmp = DetachMin(node->rightChild, node);
+        node->Element() = tmp->Element();
+      }
+      size--;
+      delete tmp;
+    }
+    return result;
+  }
+
+  template <typename Data> typename BinaryTreeLnk<Data>::NodeLnk*
+  BST<Data>::DetachMin(NodeLnk* node, NodeLnk* parent) {
+    if (node != nullptr) {
+      if (node->HasLeftChild()) {
+        return DetachMin(node->leftChild, node);
+      } else {
+        NodeLnk* minValue = node;
+        if (parent->leftChild == node) {
+          parent->leftChild = node->rightChild;
+        } else {
+          parent->rightChild = node->rightChild;
+        }
+        minValue->rightChild = nullptr;
+        return minValue;
+      }
+    }
+    return node;
+  }
 
   template <typename Data> bool
   BST<Data>::Exists(const Data& data) const noexcept {
@@ -364,28 +352,28 @@ namespace lasd {
   }
 
   template <typename Data> typename BinaryTreeLnk<Data>::NodeLnk*&
-    BST<Data>::FindPointerToSuccessor(NodeLnk*& node, const Data& data) {
-      if (node != nullptr) {
-        if (node->Element() <= data && node->rightChild != nullptr) {
-          return FindPointerToSuccessor(node->rightChild, data);
-        } else if (node->Element() > data && node->leftChild != nullptr) {
-          NodeLnk*& successor = FindPointerToSuccessor(node->leftChild, data);
-          if (successor == nullptr) {
-            return node;
-          } else {
-            return successor;
-          }
+  BST<Data>::FindPointerToSuccessor(NodeLnk*& node, const Data& data) {
+    if (node != nullptr) {
+      if (node->Element() <= data) {
+        return FindPointerToSuccessor(node->rightChild, data);
+      } else {
+        NodeLnk*& successor = FindPointerToSuccessor(node->leftChild, data);
+        if (successor == nullptr) {
+          return node;
+        } else {
+          return successor;
         }
       }
-      return node;
     }
+    return node;
+  }
 
   template <typename Data> const typename BinaryTreeLnk<Data>::NodeLnk*
   BST<Data>::FindPointerToSuccessor(const NodeLnk* const & node, const Data& data) const {
     if (node != nullptr) {
-      if (node->Element() <= data && node->rightChild != nullptr) {
+      if (node->Element() <= data ) {
         return FindPointerToSuccessor(node->rightChild, data);
-      } else if (node->Element() > data && node->leftChild != nullptr) {
+      } else {
         const NodeLnk* tmp = FindPointerToSuccessor(node->leftChild, data);
         if (tmp == nullptr) {
           return node;

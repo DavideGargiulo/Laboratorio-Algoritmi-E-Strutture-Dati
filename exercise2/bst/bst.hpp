@@ -77,15 +77,13 @@ namespace lasd {
 
     protected:
       // Auxiliary functions, if necessary!
-      /*virtual NodeLnk* RemoveElement(NodeLnk*&, const Data&);
-      virtual NodeLnk* deleteRoot(NodeLnk*&);
-      virtual NodeLnk* DetachMin(NodeLnk*&, NodeLnk*);*/
+      virtual NodeLnk* RemoveElement(NodeLnk*, const Data&);
+      virtual NodeLnk* deleteRoot(NodeLnk*);
+      virtual NodeLnk* DetachMin(NodeLnk*, NodeLnk*);
 
       bool Remove (const Data &, typename BinaryTreeLnk<Data>::NodeLnk **);
       virtual Data DataNDelete(NodeLnk*);
 
-      virtual NodeLnk* Detach(NodeLnk**);
-      virtual NodeLnk* DetachMin(NodeLnk*, NodeLnk*);
       virtual NodeLnk* DetachMax(NodeLnk*, NodeLnk*);
 
       virtual NodeLnk*& FindPointerToMin(NodeLnk*&) noexcept;
@@ -101,7 +99,7 @@ namespace lasd {
       virtual NodeLnk*& FindPointerToSuccessor(NodeLnk*&, const Data&);
       virtual const NodeLnk* FindPointerToSuccessor(const NodeLnk* const &, const Data&) const;
 
-      virtual bool InsertElement(NodeLnk*&, NodeLnk*);
+      virtual NodeLnk* InsertElement(NodeLnk*, const Data&);
   };
 }
 
