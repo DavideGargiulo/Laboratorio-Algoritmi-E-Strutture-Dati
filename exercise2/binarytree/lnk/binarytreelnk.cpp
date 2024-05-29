@@ -10,7 +10,7 @@ namespace lasd {
 
   template <typename Data>
   BinaryTreeLnk<Data>::NodeLnk::NodeLnk(Data&& data) noexcept {
-    element = std::move(data);
+    std::swap(element, data);
     leftChild = nullptr;
     rightChild = nullptr;
   }
@@ -100,11 +100,11 @@ namespace lasd {
       return;
     }
 
-    QueueVec<NodeLnk**> queue;
+    QueueVec<NodeLnk **> queue;
     queue.Enqueue(&root);
 
-    container.Traverse([&queue](const Data& data) {
-      NodeLnk** currentNode = queue.HeadNDequeue();
+    container.Traverse([&queue](const Data &data) {
+      NodeLnk **currentNode = queue.HeadNDequeue();
       *currentNode = new NodeLnk(data);
       queue.Enqueue(&((*currentNode)->leftChild));
       queue.Enqueue(&((*currentNode)->rightChild));
@@ -119,11 +119,11 @@ namespace lasd {
       return;
     }
 
-    QueueVec<NodeLnk**> queue;
+    QueueVec<NodeLnk **> queue;
     queue.Enqueue(&root);
 
-    container.MapPreOrder([&queue](Data&& data) {
-      NodeLnk** currentNode = queue.HeadNDequeue();
+    container.Map([&queue](Data &data) {
+      NodeLnk **currentNode = queue.HeadNDequeue();
       *currentNode = new NodeLnk(std::move(data));
       queue.Enqueue(&((*currentNode)->leftChild));
       queue.Enqueue(&((*currentNode)->rightChild));
@@ -138,11 +138,11 @@ namespace lasd {
       return;
     }
 
-    QueueVec<NodeLnk**> queue;
+    QueueVec<NodeLnk **> queue;
     queue.Enqueue(&root);
 
     tree.BreadthTraverse([&queue](const NodeLnk& node) {
-      NodeLnk** currentNode = queue.HeadNDequeue();
+      NodeLnk **currentNode = queue.HeadNDequeue();
       *currentNode = new NodeLnk(node);
       queue.Enqueue(&((*currentNode)->leftChild));
       queue.Enqueue(&((*currentNode)->rightChild));
@@ -155,8 +155,7 @@ namespace lasd {
     std::swap(root, tree.root);
   }
 
-  template <typename Data>
-  BinaryTreeLnk<Data>::~BinaryTreeLnk() {
+  template <typename Data> BinaryTreeLnk<Data>::~BinaryTreeLnk() {
     if (root != nullptr) {
       delete root;
     }

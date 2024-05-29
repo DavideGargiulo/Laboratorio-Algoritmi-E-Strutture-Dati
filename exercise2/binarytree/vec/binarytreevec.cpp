@@ -10,7 +10,7 @@ namespace lasd {
 
   template <typename Data>
   BinaryTreeVec<Data>::NodeVec::NodeVec(Data&& data) noexcept {
-    element = std::move(data);
+    std::swap(element, data);
   }
 
   template <typename Data>
@@ -25,27 +25,28 @@ namespace lasd {
     std::swap(index, node.index);
   }
 
-  template <typename Data> const Data&
-  BinaryTreeVec<Data>::NodeVec::Element() const noexcept {
+  template <typename Data>
+  const Data &BinaryTreeVec<Data>::NodeVec::Element() const noexcept {
     return element;
   }
 
-  template <typename Data> Data&
-  BinaryTreeVec<Data>::NodeVec::Element() noexcept {
+  template <typename Data>
+  Data &BinaryTreeVec<Data>::NodeVec::Element() noexcept {
     return element;
   }
 
-  template <typename Data> inline bool
-  BinaryTreeVec<Data>::NodeVec::HasLeftChild() const noexcept {
+  template <typename Data>
+  inline bool BinaryTreeVec<Data>::NodeVec::HasLeftChild() const noexcept {
     return (2 * index + 1) < parent->size;
   }
 
-  template <typename Data> inline bool
-  BinaryTreeVec<Data>::NodeVec::HasRightChild() const noexcept {
+  template <typename Data>
+  inline bool BinaryTreeVec<Data>::NodeVec::HasRightChild() const noexcept {
     return (2 * index + 2) < parent->size;
   }
 
-  template <typename Data> const typename BinaryTreeVec<Data>::Node&
+  template <typename Data>
+  const typename BinaryTreeVec<Data>::Node &
   BinaryTreeVec<Data>::NodeVec::LeftChild() const {
     if (!HasLeftChild()) {
       throw std::out_of_range("No left child");
@@ -53,7 +54,8 @@ namespace lasd {
     return *(*(parent->tree))[(2 * index + 1)];
   }
 
-  template <typename Data> const typename BinaryTreeVec<Data>::Node&
+  template <typename Data>
+  const typename BinaryTreeVec<Data>::Node &
   BinaryTreeVec<Data>::NodeVec::RightChild() const {
     if (!HasRightChild()) {
       throw std::out_of_range("No right child");
@@ -61,7 +63,8 @@ namespace lasd {
     return *(*(parent->tree))[(2 * index + 2)];
   }
 
-  template <typename Data> typename BinaryTreeVec<Data>::MutableNode&
+  template <typename Data>
+  typename BinaryTreeVec<Data>::MutableNode &
   BinaryTreeVec<Data>::NodeVec::LeftChild() {
     if (!HasLeftChild()) {
       throw std::out_of_range("No left child");
@@ -69,7 +72,8 @@ namespace lasd {
     return *(*(parent->tree))[(2 * index + 1)];
   }
 
-  template <typename Data> typename BinaryTreeVec<Data>::MutableNode&
+  template <typename Data>
+  typename BinaryTreeVec<Data>::MutableNode &
   BinaryTreeVec<Data>::NodeVec::RightChild() {
     if (!HasRightChild()) {
       throw std::out_of_range("No right child");
@@ -81,10 +85,10 @@ namespace lasd {
   template <typename Data>
   BinaryTreeVec<Data>::BinaryTreeVec(const TraversableContainer<Data>& container) {
     size = container.Size();
-    tree = new Vector<NodeVec*>(size);
-    ulong indexTraversal = 0;
-    container.Traverse([&](const Data& data) {
-      NodeVec* current = new NodeVec(data);
+    tree = new Vector<NodeVec *>(size);
+    unsigned long indexTraversal = 0;
+    container.Traverse([&](const Data &data) {
+      NodeVec *current = new NodeVec(data);
       (*tree)[indexTraversal] = current;
       (*tree)[indexTraversal]->index = indexTraversal;
       (*tree)[indexTraversal]->parent = this;
@@ -95,10 +99,10 @@ namespace lasd {
   template <typename Data>
   BinaryTreeVec<Data>::BinaryTreeVec(MappableContainer<Data>&& container) {
     size = container.Size();
-    tree = new Vector<NodeVec*>(size);
-    ulong indexTraversal = 0;
-    container.Map([&](Data&& data) {
-      NodeVec* current = new NodeVec(data);
+    tree = new Vector<NodeVec *>(size);
+    unsigned long indexTraversal = 0;
+    container.Map([&](Data &data) {
+      NodeVec *current = new NodeVec(std::move(data));
       (*tree)[indexTraversal] = current;
       (*tree)[indexTraversal]->index = indexTraversal;
       (*tree)[indexTraversal]->parent = this;
@@ -107,11 +111,11 @@ namespace lasd {
   }
 
   template <typename Data>
-  BinaryTreeVec<Data>::BinaryTreeVec(const BinaryTreeVec<Data>& treeVec) {
-    size = treeVec.size;
-    tree = new Vector<NodeVec*>(size);
-    ulong indexTraversal = 0;
-    treeVec.BreadthTraverse([&](const Data& data) {
+  BinaryTreeVec<Data>::BinaryTreeVec(const BinaryTreeVec<Data>& treeVector) {
+    size = treeVector.size;
+    tree = new Vector<NodeVec *>(size);
+    unsigned long indexTraversal = 0;
+    treeVector.BreadthTraverse([&](const Data &data) {
       (*tree)[indexTraversal] = new NodeVec(data);
       (*tree)[indexTraversal]->index = indexTraversal;
       (*tree)[indexTraversal]->parent = this;
@@ -120,9 +124,12 @@ namespace lasd {
   }
 
   template <typename Data>
-  BinaryTreeVec<Data>::BinaryTreeVec(BinaryTreeVec<Data>&& treeVec) noexcept {
-    std::swap(tree, treeVec.tree);
-    std::swap(size, treeVec.size);
+  BinaryTreeVec<Data>::BinaryTreeVec(BinaryTreeVec<Data>&& treeVector) noexcept {
+    std::swap(tree, treeVector.tree);
+    std::swap(size, treeVector.size);
+    for (unsigned long i = 0; i < size; i++) {
+      (*tree)[i]->parent = this;
+    }
   }
 
   template <typename Data>
@@ -133,39 +140,43 @@ namespace lasd {
 
   template <typename Data> BinaryTreeVec<Data>&
   BinaryTreeVec<Data>::operator=(const BinaryTreeVec<Data>& treeVec) {
-    if (this != &treeVec) {
-      delete[] tree;
-
-      size = treeVec.size;
-
-      tree = new Vector<NodeVec*>(size);
-
-      for (ulong i = 0; i < size; i++) {
-        (*tree)[i] = new NodeVec(*treeVec.tree->operator[](i));
-        (*tree)[i]->index = i;
-        (*tree)[i]->parent = this;
-      }
+    size = treeVec.size;
+    if (tree) {
+      tree->Resize(size);
+    } else { 
+      tree = new Vector<NodeVec *>(size);
     }
 
+    unsigned long i = 0;
+    treeVec.BreadthTraverse([&](const Data &data) {
+      (*tree)[i] = new NodeVec(data);
+      (*tree)[i]->index = i;
+      (*tree)[i]->parent = this;
+      i++;
+    });
     return *this;
   }
 
   template <typename Data> BinaryTreeVec<Data>&
-  BinaryTreeVec<Data>::operator=(BinaryTreeVec<Data>&& treeVec) noexcept {
-    if (this != &treeVec) {
-      std::swap(size, treeVec.size);
-      std::swap(tree, treeVec.tree);
+  BinaryTreeVec<Data>::operator=(BinaryTreeVec<Data>&& treeVector) noexcept {
+    std::swap(size, treeVector.size);
+    std::swap(tree, treeVector.tree);
+    for (unsigned long i = 0; i < size; i++) {
+      (*tree)[i]->parent = this;
+    }
+    for (unsigned long i = 0; i < treeVector.size; i++) {
+      (*treeVector.tree)[i]->parent = &treeVector;
     }
     return *this;
   }
 
   template <typename Data> inline bool
-  BinaryTreeVec<Data>::operator==(const BinaryTreeVec<Data>& treeVec) const noexcept {
-    if (size != treeVec.size) {
+  BinaryTreeVec<Data>::operator==(const BinaryTreeVec<Data>& treeVector) const noexcept {
+    if (size != treeVector.size) {
       return false;
     }
-    for (ulong i = 0; i < size; i++) {
-      if ((*tree)[i]->Element() != treeVec.tree[i]->Element()) {
+    for (unsigned long i = 0; i < size; i++) {
+      if ((*tree)[i]->Element() != treeVector.tree[i]->Element()) {
         return false;
       }
     }
@@ -173,8 +184,8 @@ namespace lasd {
   }
 
   template <typename Data> inline bool
-  BinaryTreeVec<Data>::operator!=(const BinaryTreeVec<Data>& treeVec) const noexcept {
-    return !(*this == treeVec);
+  BinaryTreeVec<Data>::operator!=(const BinaryTreeVec<Data>& treeVector) const noexcept {
+    return !(*this == treeVector);
   }
 
   template <typename Data> const typename BinaryTreeVec<Data>::Node&
@@ -195,7 +206,7 @@ namespace lasd {
 
   template <typename Data> void
   BinaryTreeVec<Data>::Clear() {
-    for (ulong i = 0; i < size; i++) {
+    for (unsigned long i = 0; i < size; i++) {
       delete (*tree)[i];
       (*tree)[i] = nullptr;
     }
@@ -206,14 +217,14 @@ namespace lasd {
 
   template <typename Data> void
   BinaryTreeVec<Data>::BreadthTraverse(TraverseFun function) const {
-    for (ulong indexTraverse = 0; indexTraverse < size; indexTraverse++) {
+    for (unsigned long indexTraverse = 0; indexTraverse < size; indexTraverse++) {
       function((*tree)[indexTraverse]->Element());
     }
   }
 
   template <typename Data> void
   BinaryTreeVec<Data>::BreadthMap(MapFun function) {
-    for (ulong indexTraverse = 0; indexTraverse < size; indexTraverse++) {
+    for (unsigned long indexTraverse = 0; indexTraverse < size; indexTraverse++) {
       function((*tree)[indexTraverse]->Element());
     }
   }

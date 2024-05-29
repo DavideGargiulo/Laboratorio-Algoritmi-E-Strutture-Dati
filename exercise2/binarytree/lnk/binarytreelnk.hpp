@@ -19,7 +19,7 @@ namespace lasd {
         protected:
 
         public:
-          Data element;
+          Data element{};
           NodeLnk* leftChild{nullptr};
           NodeLnk* rightChild{nullptr};
 

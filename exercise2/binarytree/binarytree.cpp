@@ -15,7 +15,8 @@ namespace lasd {
 
       if (left && right) {
         if (hasLeftChild && hasRightChild) {
-          return LeftChild() == node.LeftChild() && RightChild() == node.RightChild();
+          return LeftChild() == node.LeftChild() &&
+                RightChild() == node.RightChild();
         } else {
           if (hasLeftChild) {
             return LeftChild() == node.LeftChild();
@@ -35,8 +36,7 @@ namespace lasd {
     return !(*this == node);
   }
 
-  template <typename Data> bool
-  BinaryTree<Data>::Node::IsLeaf() const noexcept {
+  template <typename Data> bool BinaryTree<Data>::Node::IsLeaf() const noexcept {
     return !HasLeftChild() && !HasRightChild();
   }
 
@@ -100,11 +100,11 @@ namespace lasd {
   template <typename Data> inline void
   BinaryTree<Data>::BreadthTraverse(const Node* node, TraverseFun function) const {
     if (node != nullptr) {
-      QueueVec<const Node*> queue;
+      QueueVec<const Node *> queue;
       queue.Enqueue(node);
-      const Node* current;
+      const Node *current;
 
-      for (ulong i = 0; !(queue.Empty()); i++) {
+      while (!queue.Empty()) {
         current = queue.HeadNDequeue();
         function(current->Element());
 
@@ -119,21 +119,29 @@ namespace lasd {
     }
   }
 
-  // MutableBinaryTree  
+  // MutableBinaryTree
   template <typename Data> inline void
   MutableBinaryTree<Data>::PreOrderMap(MutableNode* node, MapFun function) {
     if (node != nullptr) {
       function(node->Element());
-      PreOrderMap(&(node->LeftChild()), function);
-      PreOrderMap(&(node->RightChild()), function);
+      if (node->HasLeftChild()) {
+        PreOrderMap(&(node->LeftChild()), function);
+      }
+      if (node->HasRightChild()) {
+        PreOrderMap(&(node->RightChild()), function);
+      }
     }
   }
 
-  template <typename Data> inline void
+  template <typename Data> inline void 
   MutableBinaryTree<Data>::PostOrderMap(MutableNode* node, MapFun function) {
     if (node != nullptr) {
-      PostOrderMap(&(node->LeftChild()), function);
-      PostOrderMap(&(node->RightChild()), function);
+      if (node->HasLeftChild()) {
+        PostOrderMap(&(node->LeftChild()), function);
+      }
+      if (node->HasRightChild()) {
+        PostOrderMap(&(node->RightChild()), function);
+      }
       function(node->Element());
     }
   }
@@ -141,20 +149,24 @@ namespace lasd {
   template <typename Data> inline void
   MutableBinaryTree<Data>::InOrderMap(MutableNode* node, MapFun function) {
     if (node != nullptr) {
-      InOrderMap(&(node->LeftChild()), function);
+      if (node->HasLeftChild()) {
+        InOrderMap(&(node->LeftChild()), function);
+      }
       function(node->Element());
-      InOrderMap(&(node->RightChild()), function);
+      if (node->HasRightChild()) {
+        InOrderMap(&(node->RightChild()), function);
+      }
     }
   }
 
   template <typename Data> void
   MutableBinaryTree<Data>::BreadthMap(MutableNode* node, MapFun function) {
     if (node != nullptr) {
-      QueueVec<MutableNode*> queue;
+      QueueVec<MutableNode *> queue;
       queue.Enqueue(node);
-      MutableNode* current;
+      MutableNode *current;
 
-      for (ulong i = 0; !(queue.Empty()); i++) {
+      while (!queue.Empty()) {
         current = queue.HeadNDequeue();
         function(current->Element());
 
@@ -172,7 +184,7 @@ namespace lasd {
   // BTPreOrderIterator
   template <typename Data>
   BTPreOrderIterator<Data>::BTPreOrderIterator(const BinaryTree<Data>& tree) {
-    if (&tree.Root() != nullptr) {
+    if (!tree.Empty()) {
       root = &tree.Root();
       current = root;
     }
@@ -235,8 +247,8 @@ namespace lasd {
     }
   }
 
-  template <typename Data> inline bool
-  BTPreOrderIterator<Data>::Terminated() const noexcept {
+  template <typename Data>
+  inline bool BTPreOrderIterator<Data>::Terminated() const noexcept {
     return current == nullptr;
   }
 
@@ -274,7 +286,7 @@ namespace lasd {
   BTPreOrderMutableIterator<Data>::BTPreOrderMutableIterator(const BTPreOrderMutableIterator<Data>& iterator) : BTPreOrderIterator<Data>(iterator) {}
 
   template <typename Data>
-  BTPreOrderMutableIterator<Data>::BTPreOrderMutableIterator(BTPreOrderMutableIterator<Data>&& iterator) noexcept : BTPreOrderIterator<Data>(iterator) {}
+  BTPreOrderMutableIterator<Data>::BTPreOrderMutableIterator(BTPreOrderMutableIterator<Data>&& iterator) noexcept : BTPreOrderIterator<Data>(std::move(iterator)) {}
 
   template <typename Data> BTPreOrderMutableIterator<Data>&
   BTPreOrderMutableIterator<Data>::operator=(const BTPreOrderMutableIterator<Data>& iterator) {
@@ -283,34 +295,30 @@ namespace lasd {
   }
 
   template <typename Data> BTPreOrderMutableIterator<Data>&
-  BTPreOrderMutableIterator<Data>::operator=(BTPreOrderMutableIterator<Data>&& iterator) noexcept {
+  BTPreOrderMutableIterator<Data>::operator=(BTPreOrderMutableIterator<Data> &&iterator) noexcept {
     BTPreOrderIterator<Data>::operator=(iterator);
     return *this;
   }
 
   template <typename Data> inline bool
-  BTPreOrderMutableIterator<Data>::operator==(const BTPreOrderMutableIterator<Data>& iterator) const noexcept {
+  BTPreOrderMutableIterator<Data>::operator==(const BTPreOrderMutableIterator<Data> &iterator) const noexcept {
     return BTPreOrderIterator<Data>::operator==(iterator);
   }
 
   template <typename Data> inline bool
-  BTPreOrderMutableIterator<Data>::operator!=(const BTPreOrderMutableIterator<Data>& iterator) const noexcept {
+  BTPreOrderMutableIterator<Data>::operator!=(const BTPreOrderMutableIterator<Data> &iterator) const noexcept {
     return BTPreOrderIterator<Data>::operator!=(iterator);
   }
 
   template <typename Data> Data&
   BTPreOrderMutableIterator<Data>::operator*() {
-    if (!this->Terminated()) {
-      return current->Element();
-    } else {
-      throw std::out_of_range("Iterator out of range");
-    }
+    return const_cast<Data &>(BTPreOrderIterator<Data>::operator*());
   }
 
   // BTPostOrderIterator
   template <typename Data>
   BTPostOrderIterator<Data>::BTPostOrderIterator(const BinaryTree<Data>& tree) {
-    if (&tree.Root() != nullptr) {
+    if (!tree.Empty()) {
       root = &tree.Root();
       current = root;
       getLeafMostLeft();
@@ -330,21 +338,6 @@ namespace lasd {
     std::swap(current, iterator.current);
     std::swap(stack, iterator.stack);
   }
-
-  /*template <typename Data> // ! Cambiarla, funziona però è brutta
-  void BTPostOrderIterator<Data>::getLeafMostLeft() noexcept {
-    if(current!=nullptr){
-      while (current->HasLeftChild()) {
-        stack.Push(current);
-        current = &(current->LeftChild());
-      }
-      if (current->HasRightChild()) {
-        stack.Push(current);
-        current = &(current->RightChild());
-        getLeafMostLeft();
-      }
-    }
-  }*/
 
   template <typename Data> void
   BTPostOrderIterator<Data>::getLeafMostLeft() noexcept {
@@ -398,7 +391,8 @@ namespace lasd {
     if (stack.Empty()) {
       current = nullptr;
     } else {
-      if (stack.Top()->HasRightChild() && current != &(stack.Top()->RightChild())) {
+      if (stack.Top()->HasRightChild() &&
+          current != &(stack.Top()->RightChild())) {
         current = &stack.Top()->RightChild();
         getLeafMostLeft();
       } else {
@@ -439,7 +433,7 @@ namespace lasd {
   BTPostOrderMutableIterator<Data>::BTPostOrderMutableIterator(const BTPostOrderMutableIterator<Data>& iterator) : BTPostOrderIterator<Data>(iterator) {}
 
   template <typename Data>
-  BTPostOrderMutableIterator<Data>::BTPostOrderMutableIterator(BTPostOrderMutableIterator<Data>&& iterator) noexcept : BTPostOrderIterator<Data>(iterator) {}
+  BTPostOrderMutableIterator<Data>::BTPostOrderMutableIterator(BTPostOrderMutableIterator<Data>&& iterator) noexcept : BTPostOrderIterator<Data>(std::move(iterator)) {}
 
   template <typename Data> BTPostOrderMutableIterator<Data>&
   BTPostOrderMutableIterator<Data>::operator=(const BTPostOrderMutableIterator<Data>& iterator) {
@@ -459,23 +453,19 @@ namespace lasd {
   }
 
   template <typename Data> inline bool
-  BTPostOrderMutableIterator<Data>::operator!=(const BTPostOrderMutableIterator<Data>& iterator) const noexcept {
+  BTPostOrderMutableIterator<Data>::operator!=(const BTPostOrderMutableIterator<Data> &iterator) const noexcept {
     return BTPostOrderIterator<Data>::operator!=(iterator);
   }
 
   template <typename Data> Data&
   BTPostOrderMutableIterator<Data>::operator*() {
-    if (!this->Terminated()) {
-      return this->current->Element();
-    } else {
-      throw std::out_of_range("Iterator out of range");
-    }
+    return const_cast<Data &>(BTPostOrderIterator<Data>::operator*());
   }
 
   // BTInOrderIterator
   template <typename Data>
-  BTInOrderIterator<Data>::BTInOrderIterator(const BinaryTree<Data>& tree) {
-    if (!tree.Empty() ){
+  BTInOrderIterator<Data>::BTInOrderIterator(const BinaryTree<Data> &tree) {
+    if (!tree.Empty()) {
       root = &tree.Root();
       current = root;
       getLeafMostNode();
@@ -507,12 +497,12 @@ namespace lasd {
   }
 
   template <typename Data> inline bool
-  BTInOrderIterator<Data>::operator==(const BTInOrderIterator<Data>& iterator) const noexcept {
+  BTInOrderIterator<Data>::operator==(const BTInOrderIterator<Data> &iterator) const noexcept {
     return root == iterator.root && current == iterator.current && stack == iterator.stack;
   }
 
   template <typename Data> inline bool
-  BTInOrderIterator<Data>::operator!=(const BTInOrderIterator<Data>& iterator) const noexcept {
+  BTInOrderIterator<Data>::operator!=(const BTInOrderIterator<Data> &iterator) const noexcept {
     return !(*this == iterator);
   }
 
@@ -549,7 +539,7 @@ namespace lasd {
   }
 
   template <typename Data> BTInOrderIterator<Data>&
-  BTInOrderIterator<Data>::operator=(const BTInOrderIterator<Data>& iterator) {
+  BTInOrderIterator<Data>::operator=(const BTInOrderIterator<Data> &iterator) {
     root = iterator.root;
     current = iterator.current;
     stack = iterator.stack;
@@ -557,13 +547,13 @@ namespace lasd {
   }
 
   template <typename Data> BTInOrderIterator<Data>&
-  BTInOrderIterator<Data>::operator=(BTInOrderIterator<Data>&& iterator) noexcept {
+  BTInOrderIterator<Data>::operator=(BTInOrderIterator<Data> &&iterator) noexcept {
     std::swap(root, iterator.root);
     std::swap(current, iterator.current);
     std::swap(stack, iterator.stack);
     return *this;
   }
-  
+
   template <typename Data> void
   BTInOrderIterator<Data>::Reset() noexcept {
     current = root;
@@ -578,8 +568,8 @@ namespace lasd {
   template <typename Data>
   BTInOrderMutableIterator<Data>::BTInOrderMutableIterator(const BTInOrderMutableIterator<Data>& iterator) : BTInOrderIterator<Data>(iterator) {}
 
-  template <typename Data>  
-  BTInOrderMutableIterator<Data>::BTInOrderMutableIterator(BTInOrderMutableIterator<Data>&& iterator) noexcept : BTInOrderIterator<Data>(iterator) {}
+  template <typename Data>
+  BTInOrderMutableIterator<Data>::BTInOrderMutableIterator(BTInOrderMutableIterator<Data>&& iterator) noexcept : BTInOrderIterator<Data>(std::move(iterator)) {}
 
   template <typename Data> BTInOrderMutableIterator<Data>&
   BTInOrderMutableIterator<Data>::operator=(const BTInOrderMutableIterator<Data>& iterator) {
@@ -605,11 +595,7 @@ namespace lasd {
 
   template <typename Data> Data&
   BTInOrderMutableIterator<Data>::operator*() {
-    if (!this->Terminated()) {
-      return this->current->Element();
-    } else {
-      throw std::out_of_range("Iterator out of range");
-    }
+    return const_cast<Data &>(BTInOrderIterator<Data>::operator*());
   }
 
   // BTBreadthIterator
@@ -637,6 +623,22 @@ namespace lasd {
     std::swap(root, iterator.root);
     std::swap(current, iterator.current);
     std::swap(queue, iterator.queue);
+  }
+
+  template <typename Data> BTBreadthIterator<Data>&
+  BTBreadthIterator<Data>::operator=(const BTBreadthIterator<Data>& iterator) {
+    root = iterator.root;
+    current = iterator.current;
+    queue = iterator.queue;
+    return *this;
+  }
+
+  template <typename Data> BTBreadthIterator<Data>&
+  BTBreadthIterator<Data>::operator=(BTBreadthIterator<Data>&& iterator) noexcept {
+    std::swap(root, iterator.root);
+    std::swap(current, iterator.current);
+    std::swap(queue, iterator.queue);
+    return *this;
   }
 
   template <typename Data> inline bool
@@ -697,16 +699,15 @@ namespace lasd {
     }
   }
 
-
   // BTBreadthMutableIterator
   template <typename Data>
   BTBreadthMutableIterator<Data>::BTBreadthMutableIterator(MutableBinaryTree<Data>& tree) : BTBreadthIterator<Data>(tree) {}
 
   template <typename Data>
-  BTBreadthMutableIterator<Data>::BTBreadthMutableIterator(const BTBreadthMutableIterator<Data>& iterator) : BTBreadthIterator<Data>(iterator) {}
+  BTBreadthMutableIterator<Data>::BTBreadthMutableIterator(const BTBreadthMutableIterator<Data>&iterator) : BTBreadthIterator<Data>(iterator) {}
 
   template <typename Data>
-  BTBreadthMutableIterator<Data>::BTBreadthMutableIterator(BTBreadthMutableIterator<Data>&& iterator) noexcept : BTBreadthIterator<Data>(iterator) {}
+  BTBreadthMutableIterator<Data>::BTBreadthMutableIterator(BTBreadthMutableIterator<Data>&& iterator) noexcept : BTBreadthIterator<Data>(std::move(iterator)) {}
 
   template <typename Data> BTBreadthMutableIterator<Data>&
   BTBreadthMutableIterator<Data>::operator=(const BTBreadthMutableIterator<Data>& iterator) {
@@ -730,12 +731,7 @@ namespace lasd {
     return BTBreadthIterator<Data>::operator!=(iterator);
   }
 
-  template <typename Data> Data&
-  BTBreadthMutableIterator<Data>::operator*() {
-    if (!this->Terminated()) {
-      return this->current->Element();
-    } else {
-      throw std::out_of_range("Iterator out of range");
-    }
+  template <typename Data> Data &BTBreadthMutableIterator<Data>::operator*() {
+    return const_cast<Data &>(BTBreadthIterator<Data>::operator*());
   }
 }

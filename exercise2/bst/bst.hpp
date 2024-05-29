@@ -5,13 +5,12 @@
 
 namespace lasd {
 
-  template <typename Data>
-  class BST : virtual public ClearableContainer, 
-              virtual public DictionaryContainer<Data>, 
-              virtual public BinaryTree<Data>, 
+template <typename Data>
+  class BST : virtual public ClearableContainer,
+              virtual public DictionaryContainer<Data>,
+              virtual public BinaryTree<Data>,
               virtual public BinaryTreeLnk<Data> {
     private:
-
     protected:
       using typename BinaryTreeLnk<Data>::NodeLnk;
       using BinaryTreeLnk<Data>::root;
@@ -35,10 +34,10 @@ namespace lasd {
       virtual ~BST() = default;
 
       // Copy assignment
-      BST& operator=(const BST<Data>&);
+      BST &operator=(const BST<Data>&);
 
       // Move assignment
-      BST& operator=(BST<Data>&&) noexcept;
+      BST &operator=(BST<Data>&&) noexcept;
 
       // Comparison operators
       inline bool operator==(const BST<Data>&) const noexcept;
@@ -81,27 +80,25 @@ namespace lasd {
       virtual NodeLnk* deleteRoot(NodeLnk*);
       virtual NodeLnk* DetachMin(NodeLnk*, NodeLnk*);
 
-      bool Remove (const Data &, typename BinaryTreeLnk<Data>::NodeLnk **);
       virtual Data DataNDelete(NodeLnk*);
 
-      virtual NodeLnk* DetachMax(NodeLnk*, NodeLnk*);
-
       virtual NodeLnk*& FindPointerToMin(NodeLnk*&) noexcept;
-      virtual const NodeLnk* FindPointerToMin(const NodeLnk* const &) const noexcept;
+      virtual const NodeLnk* FindPointerToMin(const NodeLnk * const &) const noexcept;
       virtual NodeLnk*& FindPointerToMax(NodeLnk*&) noexcept;
-      virtual const NodeLnk* FindPointerToMax(const NodeLnk* const &) const noexcept;
+      virtual const NodeLnk* FindPointerToMax(const NodeLnk * const &) const noexcept;
 
-      virtual NodeLnk*& FindPointerTo(NodeLnk*&, const Data&);
-      virtual const NodeLnk* FindPointerTo(const NodeLnk* const &, const Data&) const;
+      virtual NodeLnk*& FindPointerTo(NodeLnk*&, const Data &);
+      virtual const NodeLnk* FindPointerTo(const NodeLnk * const &, const Data&) const;
 
-      virtual NodeLnk*& FindPointerToPredecessor(NodeLnk*&, const Data&);
-      virtual const NodeLnk* FindPointerToPredecessor(const NodeLnk* const &, const Data&) const;
+      virtual NodeLnk*& FindPointerToPredecessor(NodeLnk *&, const Data&);
+      virtual const NodeLnk* FindPointerToPredecessor(const NodeLnk * const &,const Data&) const;
       virtual NodeLnk*& FindPointerToSuccessor(NodeLnk*&, const Data&);
-      virtual const NodeLnk* FindPointerToSuccessor(const NodeLnk* const &, const Data&) const;
+      virtual const NodeLnk* FindPointerToSuccessor(const NodeLnk * const &, const Data&) const;
 
       virtual NodeLnk* InsertElement(NodeLnk*, const Data&);
+      virtual NodeLnk* InsertElement(NodeLnk*, Data&&);
   };
-}
+} // namespace lasd
 
 #include "bst.cpp"
 
