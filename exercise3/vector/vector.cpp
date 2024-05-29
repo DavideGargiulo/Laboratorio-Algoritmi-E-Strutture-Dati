@@ -40,7 +40,7 @@ namespace lasd {
   }
 
   template <typename Data> inline Vector<Data>&
-  Vector<Data>::operator=(Vector<Data> &&vector) noexcept {
+  Vector<Data>::operator=(Vector<Data>&& vector) noexcept {
     std::swap(size, vector.size);
     std::swap(elements, vector.elements);
     return *this;

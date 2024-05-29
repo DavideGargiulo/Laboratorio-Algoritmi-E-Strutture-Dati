@@ -2,7 +2,7 @@
 cc = g++
 cflags = -Wall -pedantic -O3 -std=c++20 -fsanitize=address
 
-objects = main.o test.o mytest.o container.o exc1as.o exc1af.o exc1bs.o exc1bf.o exc2as.o exc2af.o exc2bs.o exc2bf.o exc3f.o exc3s.o
+objects = main.o test.o mytest.o myVector.o myHashTable.o container.o exc1as.o exc1af.o exc1bs.o exc1bf.o exc2as.o exc2af.o exc2bs.o exc2bf.o exc3f.o exc3s.o
 
 libcon = container/container.hpp container/testable.hpp container/traversable.cpp container/traversable.hpp container/mappable.cpp container/mappable.hpp container/dictionary.cpp container/dictionary.hpp container/linear.cpp container/linear.hpp
 
@@ -32,6 +32,8 @@ test.o: zlasdtest/test.cpp zlasdtest/test.hpp
 
 mytest.o: zmytest/test.cpp zmytest/test.hpp
 	$(cc) $(cflags) -c zmytest/test.cpp -o mytest.o
+	$(cc) $(cflags) -c zmytest/myVector/myVector.cpp -o myVector.o
+	$(cc) $(cflags) -c zmytest/myHashtable/myHashtable.cpp -o myHashtable.o
 
 container.o: $(libcon) zlasdtest/container/container.cpp zlasdtest/container/container.hpp
 	$(cc) $(cflags) -c zlasdtest/container/container.cpp -o container.o

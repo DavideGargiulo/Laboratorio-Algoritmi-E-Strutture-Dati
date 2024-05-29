@@ -1,103 +1,75 @@
-
 #ifndef HTCLSADR_HPP
 #define HTCLSADR_HPP
 
-/* ************************************************************************** */
-
 #include "../hashtable.hpp"
-// #include ...
-
-/* ************************************************************************** */
+#include "../../bst/bst.hpp"
 
 namespace lasd {
 
-/* ************************************************************************** */
+  template <typename Data>
+  class HashTableClsAdr : virtual public HashTable<Data> {
 
-template <typename Data>
-class HashTableClsAdr {
-  // Must extend HashTable<Data>
+    private:
 
-private:
+    protected:
+      using HashTable<Data>::size;
+      using HashTable<Data>::hashable;
+      using HashTable<Data>::tableSize;
+      using HashTable<Data>::hashMultiplier;
+      using HashTable<Data>::hashIncrement;
+      using HashTable<Data>::prime;
+      using HashTable<Data>::generator;
+      using HashTable<Data>::distribution;
+      using HashTable<Data>::distribution2;
+      using HashTable<Data>::Insert;
+      using HashTable<Data>::InsertAll;
+      using HashTable<Data>::HashKey;
 
-  // ...
+    public:
+      // Default constructor
+      HashTableClsAdr();
 
-protected:
+      // Specific constructors
+      HashTableClsAdr(unsigned long); // A hash table of a given size
+      HashTableClsAdr(const TraversableContainer<Data>&); // A hash table obtained from a TraversableContainer
+      HashTableClsAdr(const unsigned long, const TraversableContainer<Data>&); // A hash table of a given size obtained from a TraversableContainer
+      HashTableClsAdr(MappableContainer<Data>&&); // A hash table obtained from a MappableContainer
+      HashTableClsAdr(const unsigned long, MappableContainer<Data>&&); // A hash table of a given size obtained from a MappableContainer
 
-  // using HashTable<Data>::???;
+      // Copy constructor
+      HashTableClsAdr(const HashTableClsAdr&);
 
-  // ...
+      // Move constructor
+      HashTableClsAdr(HashTableClsAdr&&) noexcept;
 
-public:
+      // Destructor
+      virtual ~HashTableClsAdr();
 
-  // Default constructor
-  // HashTableClsAdr() specifiers;
+      // Copy assignment
+      // type operator=(argument) specifiers;
 
-  /* ************************************************************************ */
+      // Move assignment
+      // type operator=(argument) specifiers;
 
-  // Specific constructors
-  // HashTableClsAdr(argument) specifiers; // A hash table of a given size
-  // HashTableClsAdr(argument) specifiers; // A hash table obtained from a TraversableContainer
-  // HashTableClsAdr(argument) specifiers; // A hash table of a given size obtained from a TraversableContainer
-  // HashTableClsAdr(argument) specifiers; // A hash table obtained from a MappableContainer
-  // HashTableClsAdr(argument) specifiers; // A hash table of a given size obtained from a MappableContainer
+      // Comparison operators
+      // type operator==(argument) specifiers;
+      // type operator!=(argument) specifiers;
 
-  /* ************************************************************************ */
+      // Specific member functions (inherited from DictionaryContainer)
+      // type Insert(argument) specifiers; // Override DictionaryContainer member (Copy of the value)
+      // type Insert(argument) specifiers; // Override DictionaryContainer member (Move of the value)
+      // type Remove(argument) specifiers; // Override DictionaryContainer member
 
-  // Copy constructor
-  // HashTableClsAdr(argument) specifiers;
+      // Specific member functions (inherited from TestableContainer)
+      // type Exists(argument) specifiers; // Override TestableContainer member
 
-  // Move constructor
-  // HashTableClsAdr(argument) specifiers;
+      // Specific member functions (inherited from ResizableContainer)
+      // type Resize(argument) specifiers; // Resize the hashtable to a given size
 
-  /* ************************************************************************ */
+      // Specific member functions (inherited from ClearableContainer)
+      // type Clear() specifiers; // Override Container member
 
-  // Destructor
-  // ~HashTableClsAdr() specifiers;
-
-  /* ************************************************************************ */
-
-  // Copy assignment
-  // type operator=(argument) specifiers;
-
-  // Move assignment
-  // type operator=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Comparison operators
-  // type operator==(argument) specifiers;
-  // type operator!=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from DictionaryContainer)
-
-  // type Insert(argument) specifiers; // Override DictionaryContainer member (Copy of the value)
-  // type Insert(argument) specifiers; // Override DictionaryContainer member (Move of the value)
-  // type Remove(argument) specifiers; // Override DictionaryContainer member
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from TestableContainer)
-
-  // type Exists(argument) specifiers; // Override TestableContainer member
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from ResizableContainer)
-
-  // type Resize(argument) specifiers; // Resize the hashtable to a given size
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from ClearableContainer)
-
-  // type Clear() specifiers; // Override Container member
-
-};
-
-/* ************************************************************************** */
-
+  };
 }
 
 #include "htclsadr.cpp"

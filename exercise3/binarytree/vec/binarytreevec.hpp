@@ -1,14 +1,13 @@
 #ifndef BINARYTREEVEC_HPP
 #define BINARYTREEVEC_HPP
 
-#include "../binarytree.hpp"
 #include "../../vector/vector.hpp"
+#include "../binarytree.hpp"
 
 namespace lasd {
 
   template <typename Data>
   class BinaryTreeVec : virtual public MutableBinaryTree<Data> {
-
     private:
 
     protected:
@@ -17,40 +16,38 @@ namespace lasd {
 
       struct NodeVec : MutableNode {
 
-        private:
+      private:
+      protected:
+        Data element{};
+        unsigned long index{0};
+        BinaryTreeVec *parent{nullptr};
 
-        protected:
-          Data element;
-          ulong index{0};
-          BinaryTreeVec* parent{nullptr};
+      public:
+        friend class BinaryTreeVec<Data>;
 
-        public:
-          friend class BinaryTreeVec<Data>;
+        NodeVec() = default;
+        NodeVec(const Data &data);
+        NodeVec(Data &&data) noexcept;
 
-          NodeVec() = default;
-          NodeVec(const Data& data);
-          NodeVec(Data&& data) noexcept;
+        NodeVec(const NodeVec &node);
+        NodeVec(NodeVec &&node) noexcept;
 
-          NodeVec(const NodeVec& node);
-          NodeVec(NodeVec&& node) noexcept;
+        virtual ~NodeVec() = default;
 
-          virtual ~NodeVec() = default;
+        const Data& Element() const noexcept override;
+        Data& Element() noexcept override;
+        inline bool HasLeftChild() const noexcept override;
+        inline bool HasRightChild() const noexcept override;
+        const Node& LeftChild() const override;
+        const Node& RightChild() const override;
+        MutableNode& LeftChild() override;
+        MutableNode& RightChild() override;
+      };
 
-          const Data& Element() const noexcept override;
-          Data& Element() noexcept override;
-          inline bool HasLeftChild() const noexcept override;
-          inline bool HasRightChild() const noexcept override;
-          const Node& LeftChild() const override;
-          const Node& RightChild() const override;
-          MutableNode& LeftChild() override;
-          MutableNode& RightChild() override;
-        };
-
-        using MutableBinaryTree<Data>::size;
-        Vector<NodeVec*> *tree{nullptr};
+      using MutableBinaryTree<Data>::size;
+      Vector<NodeVec*> *tree{nullptr};
 
     public:
-
       // Default constructor
       BinaryTreeVec() = default;
 
@@ -68,10 +65,10 @@ namespace lasd {
       virtual ~BinaryTreeVec();
 
       // Copy assignment
-      BinaryTreeVec& operator=(const BinaryTreeVec&);
+      BinaryTreeVec &operator=(const BinaryTreeVec&);
 
       // Move assignment
-      BinaryTreeVec& operator=(BinaryTreeVec&&) noexcept;
+      BinaryTreeVec &operator=(BinaryTreeVec&&) noexcept;
 
       // Comparison operators
       inline bool operator==(const BinaryTreeVec<Data>&) const noexcept;

@@ -1,112 +1,83 @@
-
 #ifndef HTOPNADR_HPP
 #define HTOPNADR_HPP
 
-/* ************************************************************************** */
-
 #include "../hashtable.hpp"
-// #include ...
-
-/* ************************************************************************** */
+#include "../../vector/vector.hpp"
 
 namespace lasd {
 
-/* ************************************************************************** */
+  template <typename Data>
+  class HashTableOpnAdr : virtual public HashTable<Data> {
+    private:
 
-template <typename Data>
-class HashTableOpnAdr {
-  // Must extend HashTable<Data>
+    protected:
+      using HashTable<Data>::size;
+      using HashTable<Data>::hashable;
+      using HashTable<Data>::tableSize;
+      using HashTable<Data>::hashMultiplier;
+      using HashTable<Data>::hashIncrement;
+      using HashTable<Data>::prime;
+      using HashTable<Data>::generator;
+      using HashTable<Data>::distribution;
+      using HashTable<Data>::distribution2;
+      using HashTable<Data>::Insert;
+      using HashTable<Data>::InsertAll;
+      using HashTable<Data>::InsertSome;
+      using HashTable<Data>::HashKey;
 
-private:
+      Vector<Data> table;
+      Vector<int> state;
 
-  // ...
+      double capacity{0.0};
+    public:
+      // Default constructor
+      HashTableOpnAdr();
 
-protected:
+      // Specific constructors
+      HashTableOpnAdr(const unsigned long); // A hash table of a given size
+      HashTableOpnAdr(const TraversableContainer<Data>&); // A hash table obtained from a TraversableContainer
+      HashTableOpnAdr(const unsigned long, const TraversableContainer<Data>&); // A hash table of a given size obtained from a TraversableContainer
+      HashTableOpnAdr(MappableContainer<Data>&&) noexcept; // A hash table obtained from a MappableContainer
+      HashTableOpnAdr(const unsigned long, MappableContainer<Data>&&) noexcept; // A hash table of a given size obtained from a MappableContainer
 
-  // using HashTable<Data>::???;
+      // Copy constructor
+      HashTableOpnAdr(const HashTableOpnAdr&);
 
-  // ...
+      // Move constructor
+      HashTableOpnAdr(HashTableOpnAdr&&) noexcept;
 
-public:
+      // Destructor
+      virtual ~HashTableOpnAdr() = default;
 
-  // Default constructor
-  // HashTableOpnAdr() specifiers;
+      // Copy assignment
+      HashTableOpnAdr& operator=(const HashTableOpnAdr&);
 
-  /* ************************************************************************ */
+      // Move assignment
+      HashTableOpnAdr& operator=(HashTableOpnAdr&&) noexcept;
 
-  // Specific constructors
-  // HashTableOpnAdr(argument) specifiers; // A hash table of a given size
-  // HashTableOpnAdr(argument) specifiers; // A hash table obtained from a TraversableContainer
-  // HashTableOpnAdr(argument) specifiers; // A hash table of a given size obtained from a TraversableContainer
-  // HashTableOpnAdr(argument) specifiers; // A hash table obtained from a MappableContainer
-  // HashTableOpnAdr(argument) specifiers; // A hash table of a given size obtained from a MappableContainer
+      // Comparison operators
+      inline bool operator==(const HashTableOpnAdr&) const noexcept;
+      inline bool operator!=(const HashTableOpnAdr&) const noexcept;
 
-  /* ************************************************************************ */
+      // Specific member functions (inherited from DictionaryContainer)
+      bool Insert(const Data&) override;
+      bool Insert(Data&&) override;
+      bool Remove(const Data&) override;
 
-  // Copy constructor
-  // HashTableOpnAdr(argument) specifiers;
+      // Specific member functions (inherited from TestableContainer)
+      bool Exists(const Data&) const noexcept override;
 
-  // Move constructor
-  // HashTableOpnAdr(argument) specifiers;
+      // Specific member functions (inherited from ResizableContainer)
+      void Resize(unsigned long);
 
-  /* ************************************************************************ */
+      // Specific member functions (inherited from ClearableContainer)
+      void Clear() noexcept override;
 
-  // Destructor
-  // ~HashTableOpnAdr() specifiers;
+    protected:
 
-  /* ************************************************************************ */
-
-  // Copy assignment
-  // type operator=(argument) specifiers;
-
-  // Move assignment
-  // type operator=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Comparison operators
-  // type operator==(argument) specifiers;
-  // type operator!=(argument) specifiers;
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from DictionaryContainer)
-
-  // type Insert(argument) specifiers; // Override DictionaryContainer member (Copy of the value)
-  // type Insert(argument) specifiers; // Override DictionaryContainer member (Move of the value)
-  // type Remove(argument) specifiers; // Override DictionaryContainer member
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from TestableContainer)
-
-  // type Exists(argument) specifiers; // Override TestableContainer member
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from ResizableContainer)
-
-  // type Resize(argument) specifiers; // Resize the hashtable to a given size
-
-  /* ************************************************************************ */
-
-  // Specific member functions (inherited from ClearableContainer)
-
-  // type Clear() specifiers; // Override Container member
-
-protected:
-
-  // Auxiliary member functions
-
-  // type HashKey(argument) specifiers;
-  // type Find(argument) specifiers;
-  // type FindEmpty(argument) specifiers;
-  // type Remove(argument) specifiers;
-
-};
-
-/* ************************************************************************** */
-
+      // Auxiliary member functions
+      virtual unsigned long HashKey(const Data&, unsigned long) const noexcept;
+  };
 }
 
 #include "htopnadr.cpp"

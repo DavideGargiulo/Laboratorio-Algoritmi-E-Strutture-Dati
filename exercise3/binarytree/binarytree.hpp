@@ -76,29 +76,40 @@ namespace lasd {
       using typename TraversableContainer<Data>::TraverseFun;
 
       inline void Traverse (TraverseFun function) const override {
-        PreOrderTraverse(&Root(), function);
+        if (!Empty()) {
+          PreOrderTraverse(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from PreOrderTraversableContainer)
       inline void PreOrderTraverse (TraverseFun function) const override {
-        PreOrderTraverse(&Root(), function);
+        if (!Empty()) {
+          PreOrderTraverse(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from PostOrderTraversableContainer)
       inline void PostOrderTraverse (TraverseFun function) const override {
-        PostOrderTraverse(&Root(), function);
+        if (!Empty()) {
+          PostOrderTraverse(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from InOrderTraversableContainer)
       inline void InOrderTraverse (TraverseFun function) const override {
-        InOrderTraverse(&Root(), function);
+        if (!Empty()) {
+          InOrderTraverse(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from BreadthTraversableContainer)
       inline void BreadthTraverse (TraverseFun function) const override {
-        BreadthTraverse(&Root(), function);
+        if (!Empty()) {
+          BreadthTraverse(&Root(), function);
+        }
       };
 
+      using Container::Empty;
     protected:
       void PreOrderTraverse(const Node*, TraverseFun) const;
       void PostOrderTraverse(const Node*, TraverseFun) const;
@@ -123,6 +134,10 @@ namespace lasd {
     public:
 
       struct MutableNode : Node {
+        using Node::Element;
+        using Node::LeftChild;
+        using Node::RightChild;
+
         // Must extend Node
         friend class MutableBinaryTree<Data>;
 
@@ -150,6 +165,7 @@ namespace lasd {
       // Move assignment
       MutableBinaryTree& operator=(MutableBinaryTree&&) noexcept = delete;
 
+      using BinaryTree<Data>::Root;
       // Specific member functions
       virtual MutableNode& Root() = 0;
 
@@ -157,28 +173,40 @@ namespace lasd {
       using typename MappableContainer<Data>::MapFun;
 
       inline void Map(MapFun function) override {
-        PreOrderMap(&Root(), function);
+        if (!Empty()) {
+          PreOrderMap(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from PreOrderMappableContainer)
       inline void PreOrderMap(MapFun function) override {
-        PreOrderMap(&Root(), function);
+        if (!Empty()) {
+          PreOrderMap(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from PostOrderMappableContainer)
       inline void PostOrderMap(MapFun function) override {
-        PostOrderMap(&Root(), function);
+        if (!Empty()) {
+          PostOrderMap(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from InOrderMappableContainer)
       inline void InOrderMap(MapFun function) override {
-        InOrderMap(&Root(), function);
+        if (!Empty()) {
+          InOrderMap(&Root(), function);
+        }
       };
 
       // Specific member function (inherited from BreadthMappableContainer)
       inline void BreadthMap(MapFun function) override {
-        BreadthMap(&Root(), function);
+        if (!Empty()) {
+          BreadthMap(&Root(), function);
+        }
       };
+
+      using Container::Empty;
   protected:
     void PreOrderMap(MutableNode*, MapFun);
     void PostOrderMap(MutableNode*, MapFun);
@@ -233,11 +261,10 @@ namespace lasd {
 
   template <typename Data>
   class BTPreOrderMutableIterator : virtual public MutableIterator<Data>,
-                                    virtual protected BTPreOrderIterator<Data> {
+                                    virtual public BTPreOrderIterator<Data> {
     private:
 
     protected:
-      using BTPreOrderIterator<Data>::current;
 
     public:
       // Specific constructors
@@ -314,11 +341,10 @@ namespace lasd {
 
   template <typename Data>
   class BTPostOrderMutableIterator : virtual public MutableIterator<Data>, 
-                                     virtual protected BTPostOrderIterator<Data> {
+                                     virtual public BTPostOrderIterator<Data> {
     private:
 
     protected:
-      using BTPostOrderIterator<Data>::current;
 
     public:
       // Specific constructors
@@ -395,7 +421,7 @@ namespace lasd {
 
   template <typename Data>
   class BTInOrderMutableIterator : virtual public MutableIterator<Data>,
-                                   virtual protected BTInOrderIterator<Data> {
+                                   virtual public BTInOrderIterator<Data> {
     private:
 
     protected:
@@ -476,7 +502,7 @@ namespace lasd {
 
   template <typename Data>
   class BTBreadthMutableIterator : virtual public MutableIterator<Data>,
-                                 virtual protected BTBreadthIterator<Data> {
+                                 virtual public BTBreadthIterator<Data> {
     private:
 
     protected:

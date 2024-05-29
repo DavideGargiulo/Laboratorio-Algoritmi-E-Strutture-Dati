@@ -1,76 +1,60 @@
-
 #ifndef HASHTABLE_HPP
 #define HASHTABLE_HPP
 
-/* ************************************************************************** */
-
 #include <random>
-
-/* ************************************************************************** */
 
 #include "../container/dictionary.hpp"
 
-/* ************************************************************************** */
-
 namespace lasd {
 
-/* ************************************************************************** */
+  template <typename Data>
+  class Hashable {
+    public:
+      virtual ulong operator()(const Data&) const noexcept = 0;
+  };
 
-template <typename Data>
-class Hashable {
+  template <typename Data>
+  class HashTable : virtual public ResizableContainer, virtual public DictionaryContainer<Data> {
+    private:
 
-public:
+    protected:
+      using DictionaryContainer<Data>::size;
 
-  // type operator()(argument) specifiers; // (concrete function should not throw exceptions)
+      unsigned long hashMultiplier = 1;
+      unsigned long hashIncrement = 0;
+      static const unsigned long prime = 109345121;
 
-};
+      std::default_random_engine generator = std::default_random_engine(std::random_device {}());
+      std::uniform_int_distribution<ulong> distribution = std::uniform_int_distribution<ulong>(1, prime - 1);
+      std::uniform_int_distribution<ulong> distribution2 = std::uniform_int_distribution<ulong>(0, prime - 1);
 
-/* ************************************************************************** */
+      static const Hashable<Data> hashable;
 
-template <typename Data>
-class HashTable {
-                  // Must extend ResizableContainer,
-                  //             DictionaryContainer<Data>
+      unsigned long tableSize = 128;
 
-private:
 
-  // ...
+    public:
+      HashTable();
+      HashTable(const HashTable&);
+      HashTable(HashTable&&) noexcept;
+      
+      // Destructor
+      virtual ~HashTable() = default;
 
-protected:
+      // Copy assignment
+      HashTable& operator=(const HashTable&);
 
-  // using DictionaryContainer<Data>::???;
+      // Move assignment
+      HashTable& operator=(HashTable&&) noexcept;
 
-  // ...
-
-public:
-
-  // Destructor
-  // ~HashTable() specifiers
-
-  /* ************************************************************************ */
-
-  // Copy assignment
-  // type operator=(argument); // Copy assignment of abstract types should not be possible.
-
-  // Move assignment
-  // type operator=(argument); // Move assignment of abstract types should not be possible.
-
-  /* ************************************************************************ */
-
-  // Comparison operators
-  // type operator==(argument) specifiers; // Comparison of abstract hashtable is possible but not required.
-  // type operator!=(argument) specifiers; // Comparison of abstract hashtable is possible but not required.
-
-protected:
-
-  // Auxiliary member functions
-
-  // type HashKey(argument) specifiers;
-
-};
-
-/* ************************************************************************** */
-
+      // Comparison operators
+      inline bool operator==(const HashTable&) const noexcept = delete;
+      inline bool operator!=(const HashTable&) const noexcept = delete;
+    protected:
+      // Auxiliary member functions
+      virtual unsigned long HashKey(const Data&) const noexcept;
+      virtual unsigned long HashKey(unsigned long) const noexcept;
+  };
 }
 
 #include "hashtable.cpp"

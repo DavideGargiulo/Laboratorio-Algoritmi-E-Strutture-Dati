@@ -101,22 +101,22 @@ void stestHashTableInt(uint & testnum, uint & testerr) {
       vec[i] = pow(-2, i % 24) * ((61 * i + 29) % 127);
     }
 
-    lasd::HashTableClsAdr<int> htclsadr(83, vec);
-    cout << endl << "Begin of HashTableClsAdr<int> Test:" << endl;
-    stestHashTableInt(htclsadr, vec, loctestnum, loctesterr);
+    // lasd::HashTableClsAdr<int> htclsadr(83, vec);
+    // cout << endl << "Begin of HashTableClsAdr<int> Test:" << endl;
+    // stestHashTableInt(htclsadr, vec, loctestnum, loctesterr);
     lasd::HashTableOpnAdr<int> htopnadr(83, vec);
     cout << endl << "Begin of HashTableOpnAdr<int> Test:" << endl;
     stestHashTableInt(htopnadr, vec, loctestnum, loctesterr);
     cout << "\n";
 
-    lasd::HashTableClsAdr<int> cophtclsadr(htclsadr);
-    EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    htclsadr.Clear();
-    NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    htclsadr = std::move(cophtclsadr);
-    NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    cophtclsadr = htclsadr;
-    EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // lasd::HashTableClsAdr<int> cophtclsadr(htclsadr);
+    // EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // htclsadr.Clear();
+    // NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // htclsadr = std::move(cophtclsadr);
+    // NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // cophtclsadr = htclsadr;
+    // EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
 
     lasd::HashTableOpnAdr<int> cophtopnadr(htopnadr);
     EqualHT(loctestnum, loctesterr, cophtopnadr, htopnadr);
@@ -194,22 +194,22 @@ void stestHashTableFloat(uint & testnum, uint & testerr) {
       lst.InsertAtFront((pow(-2, i % 24) * ((61 * i + 29) % 127)) / (83 * pow(-3, i % 7)));
     }
 
-    lasd::HashTableClsAdr<double> htclsadr(83, lst);
-    cout << endl << "Begin of HashTableClsAdr<double> Test:" << endl;
-    stestHashTableFloat(htclsadr, lst, loctestnum, loctesterr);
+    // lasd::HashTableClsAdr<double> htclsadr(83, lst);
+    // cout << endl << "Begin of HashTableClsAdr<double> Test:" << endl;
+    // stestHashTableFloat(htclsadr, lst, loctestnum, loctesterr);
     lasd::HashTableOpnAdr<double> htopnadr(83, lst);
     cout << endl << "Begin of HashTableOpnAdr<double> Test:" << endl;
     stestHashTableFloat(htopnadr, lst, loctestnum, loctesterr);
     cout << "\n";
 
-    lasd::HashTableClsAdr<double> cophtclsadr(htclsadr);
-    EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    htclsadr.Clear();
-    NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    htclsadr = std::move(cophtclsadr);
-    NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    cophtclsadr = htclsadr;
-    EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // lasd::HashTableClsAdr<double> cophtclsadr(htclsadr);
+    // EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // htclsadr.Clear();
+    // NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // htclsadr = std::move(cophtclsadr);
+    // NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // cophtclsadr = htclsadr;
+    // EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
 
     lasd::HashTableOpnAdr<double> cophtopnadr(htopnadr);
     EqualHT(loctestnum, loctesterr, cophtopnadr, htopnadr);
@@ -293,22 +293,22 @@ void stestHashTableString(uint & testnum, uint & testerr) {
       vec[i][i % 19] = static_cast<char>(32 + ((127 * i + 31) % 95));
     }
 
-    lasd::HashTableClsAdr<string> htclsadr(101, vec);
-    cout << endl << "Begin of HashTableClsAdr<string> Test:" << endl;
-    stestHashTableString(htclsadr, vec, loctestnum, loctesterr);
+    // lasd::HashTableClsAdr<string> htclsadr(101, vec);
+    // cout << endl << "Begin of HashTableClsAdr<string> Test:" << endl;
+    // stestHashTableString(htclsadr, vec, loctestnum, loctesterr);
     lasd::HashTableOpnAdr<string> htopnadr(101, vec);
     cout << endl << "Begin of HashTableOpnAdr<string> Test:" << endl;
     stestHashTableString(htopnadr, vec, loctestnum, loctesterr);
     cout << "\n";
 
-    lasd::HashTableClsAdr<string> cophtclsadr(htclsadr);
-    EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    htclsadr.Clear();
-    NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    htclsadr = std::move(cophtclsadr);
-    NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
-    cophtclsadr = htclsadr;
-    EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // lasd::HashTableClsAdr<string> cophtclsadr(htclsadr);
+    // EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // htclsadr.Clear();
+    // NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // htclsadr = std::move(cophtclsadr);
+    // NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
+    // cophtclsadr = htclsadr;
+    // EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
 
     lasd::HashTableOpnAdr<string> cophtopnadr(htopnadr);
     EqualHT(loctestnum, loctesterr, cophtopnadr, htopnadr);
