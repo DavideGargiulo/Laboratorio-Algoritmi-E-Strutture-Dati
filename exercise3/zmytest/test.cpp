@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../zmytest/myVector/myVector.hpp"
-#include "../zmytest/myHashtable/myHashtable.hpp"
+#include "../zmytest/myHashTable/myHashtable.hpp"
 
 /* ************************************************************************** */
 
