@@ -108,7 +108,6 @@ namespace lasd {
     return true;
   }
 
-
   template <typename Data> bool
   HashTableOpnAdr<Data>::operator!=(const HashTableOpnAdr<Data>& hashTable) const noexcept {
     return !(*this == hashTable);
@@ -122,12 +121,12 @@ namespace lasd {
     for (unsigned long i = 0; i < tableSize; ++i) {
       unsigned long index = HashKey(data, i);
       if (state[index] != 1) {
-        if (size >= tableSize * 0.75) {
-          Resize(tableSize * 2);
-        }
         table[index] = data;
         state[index] = 1;
         size++;
+        if (size >= tableSize * 0.75) {
+          Resize(tableSize * 2);
+        }
         return true;
       }
     }
@@ -142,12 +141,12 @@ namespace lasd {
     for (unsigned long i = 0; i < tableSize; ++i) {
       unsigned long index = HashKey(data, i);
       if (state[index] != 1) {
-        if (size >= tableSize * 0.75) {
-          Resize(tableSize * 2);
-        }
         table[index] = std::move(data);
         state[index] = 1;
         size++;
+        if (size >= tableSize * 0.75) {
+          Resize(tableSize * 2);
+        }
         return true;
       }
     }
@@ -171,8 +170,12 @@ namespace lasd {
   bool HashTableOpnAdr<Data>::Exists(const Data& data) const noexcept {
     for (unsigned long i = 0; i < tableSize; ++i) {
       unsigned long index = HashKey(data, i);
-      if (state[index] == 0) return false;
-      if (state[index] == 1 && table[index] == data) return true;
+      if (state[index] == 0) { 
+        return false;
+      }
+      if (state[index] == 1 && table[index] == data) {
+        return true;
+      }
     }
     return false;
   }

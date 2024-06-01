@@ -32,7 +32,6 @@ namespace lasd {
 
       unsigned long tableSize = 128;
 
-
     public:
       HashTable();
       HashTable(const HashTable&);
