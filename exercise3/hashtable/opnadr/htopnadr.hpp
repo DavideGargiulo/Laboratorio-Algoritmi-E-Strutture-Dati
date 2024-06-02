@@ -28,7 +28,6 @@ namespace lasd {
       Vector<Data> table;
       Vector<int> state;
 
-      double capacity{0.0};
     public:
       // Default constructor
       HashTableOpnAdr();

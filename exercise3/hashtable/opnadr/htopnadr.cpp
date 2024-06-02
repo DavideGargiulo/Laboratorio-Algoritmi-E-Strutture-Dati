@@ -166,20 +166,21 @@ namespace lasd {
     return false;
   }
 
-  template <typename Data>
-  bool HashTableOpnAdr<Data>::Exists(const Data& data) const noexcept {
-    for (unsigned long i = 0; i < tableSize; ++i) {
-      unsigned long index = HashKey(data, i);
-      if (state[index] == 0) { 
-        return false;
-      }
-      if (state[index] == 1 && table[index] == data) {
-        return true;
-      }
-    }
-    return false;
-  }
-
+  // template <typename Data> bool
+  // HashTableOpnAdr<Data>::Exists(const Data& data) const noexcept {
+  //   if (size == 0) {
+  //     return false;
+  //   }
+  //   unsigned long index = Find(data, 0);
+  //   if (index < tableSize) {
+  //     unsigned long indexStart = HashKey(data, index);
+  //     if (state[indexStart] == 1 && table[indexStart] == data) {
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
+  
   template <typename Data> void
   HashTableOpnAdr<Data>::Resize(unsigned long newSize) {    
     Vector<Data> oldTable = std::move(table);
@@ -219,6 +220,33 @@ namespace lasd {
   template <typename Data> unsigned long
   HashTableOpnAdr<Data>::HashKey(const Data& data, unsigned long key) const noexcept {
     unsigned long index = hashable(data);
-    return (HashTable<Data>::HashKey(index) + key) % tableSize;
+    return (HashKey(index) + key) % tableSize;
   }
+
+  template <typename Data> unsigned long
+  HashTableOpnAdr<Data>::FindEmpty(const Data& dat, unsigned long index) const noexcept {
+    while (index < tableSize) {
+      unsigned long start = HashKey(dat, index);
+      if (state[start] == 0 || state[start] == 2) {
+        return index;
+      }
+      ++index;
+    }
+    return index;
+  }
+
+    template <typename Data> unsigned long
+    HashTableOpnAdr<Data>::Find(const Data& data, unsigned long index) const noexcept {
+      unsigned long start = HashKey(data, index);
+      if (index >= tableSize) {
+        return index;
+      }
+      if (table[start] == data) {
+        return index;
+      }
+      if (state[start] == 0) {
+        return tableSize;
+      }
+      return Find(data, index + 1);
+    }
 }

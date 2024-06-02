@@ -1,6 +1,5 @@
 namespace lasd {
 
-  // Default constructor
   template <typename Data>
   HashTableClsAdr<Data>::HashTableClsAdr() {
     tableSize = 128;
@@ -8,7 +7,6 @@ namespace lasd {
     table.Resize(tableSize);
   }
 
-  // Specific constructor with size
   template <typename Data>
   HashTableClsAdr<Data>::HashTableClsAdr(const unsigned long newSize) {
     tableSize = (newSize < 128) ? 128 : newSize;
@@ -16,84 +14,63 @@ namespace lasd {
     table.Resize(tableSize);
   }
 
-  // Specific constructor from TraversableContainer
   template <typename Data>
-  HashTableClsAdr<Data>::HashTableClsAdr(const TraversableContainer<Data>& container)
-    : HashTableClsAdr(container.Size() * 2) {
+  HashTableClsAdr<Data>::HashTableClsAdr(const TraversableContainer<Data>& container) : HashTableClsAdr(container.Size() * 2) {
     InsertAll(container);
   }
 
-  // Specific constructor with size from TraversableContainer
   template <typename Data>
-  HashTableClsAdr<Data>::HashTableClsAdr(const unsigned long newTableSize, const TraversableContainer<Data>& container)
-    : HashTableClsAdr(newTableSize) {
+  HashTableClsAdr<Data>::HashTableClsAdr(const unsigned long newTableSize, const TraversableContainer<Data>& container) : HashTableClsAdr(newTableSize) {
     InsertAll(container);
   }
 
-  // Specific constructor from MappableContainer
   template <typename Data>
-  HashTableClsAdr<Data>::HashTableClsAdr(MappableContainer<Data>&& container)
-    : HashTableClsAdr(container.Size() * 2) {
+  HashTableClsAdr<Data>::HashTableClsAdr(MappableContainer<Data>&& container) : HashTableClsAdr(container.Size() * 2) {
     InsertAll(std::move(container));
   }
 
-  // Specific constructor with size from MappableContainer
   template <typename Data>
-  HashTableClsAdr<Data>::HashTableClsAdr(const unsigned long newTableSize, MappableContainer<Data>&& container)
-    : HashTableClsAdr(newTableSize) {
+  HashTableClsAdr<Data>::HashTableClsAdr(const unsigned long newTableSize, MappableContainer<Data>&& container) : HashTableClsAdr(newTableSize) {
     InsertAll(std::move(container));
   }
-
-  // Copy constructor
+  
   template <typename Data>
-  HashTableClsAdr<Data>::HashTableClsAdr(const HashTableClsAdr<Data>& other) {
-    tableSize = other.tableSize;
-    size = other.size;
-    table = other.table;
+  HashTableClsAdr<Data>::HashTableClsAdr(const HashTableClsAdr<Data>& hashTable) {
+    tableSize = hashTable.tableSize;
+    size = hashTable.size;
+    table = hashTable.table;
   }
-
-  // Move constructor
+  
   template <typename Data>
-  HashTableClsAdr<Data>::HashTableClsAdr(HashTableClsAdr&& other) noexcept {
-    std::swap(tableSize, other.tableSize);
-    std::swap(table, other.table);
-    std::swap(size, other.size);
+  HashTableClsAdr<Data>::HashTableClsAdr(HashTableClsAdr&& hashTable) noexcept {
+    std::swap(tableSize, hashTable.tableSize);
+    std::swap(table, hashTable.table);
+    std::swap(size, hashTable.size);
   }
-
-  // Destructor
-  template <typename Data>
-  HashTableClsAdr<Data>::~HashTableClsAdr() {
-    Clear();
-  }
-
-  // Copy assignment
+  
   template <typename Data> HashTableClsAdr<Data>&
-  HashTableClsAdr<Data>::operator=(const HashTableClsAdr<Data>& other) {
-    table = other.table;
-    tableSize = other.tableSize;
-    size = other.size;
+  HashTableClsAdr<Data>::operator=(const HashTableClsAdr<Data>& hashTable) {
+    table = hashTable.table;
+    tableSize = hashTable.tableSize;
+    size = hashTable.size;
     return *this;
   }
 
-  // Move assignment
   template <typename Data> HashTableClsAdr<Data>&
-  HashTableClsAdr<Data>::operator=(HashTableClsAdr&& other) noexcept {
-    if (this != &other) {
-      std::swap(tableSize, other.tableSize);
-      std::swap(table, other.table);
-      std::swap(size, other.size);
-    }
+  HashTableClsAdr<Data>::operator=(HashTableClsAdr&& hashTable) noexcept {
+    std::swap(tableSize, hashTable.tableSize);
+    std::swap(table, hashTable.table);
+    std::swap(size, hashTable.size);
     return *this;
   }
 
-  // Comparison operators
   template <typename Data> inline bool
-  HashTableClsAdr<Data>::operator==(const HashTableClsAdr& other) const noexcept {
-    if (size != other.size) {
+  HashTableClsAdr<Data>::operator==(const HashTableClsAdr& hashTable) const noexcept {
+    if (size != hashTable.size) {
       return false;
     }
     for (unsigned long i = 0; i < tableSize; ++i) {
-      if (table[i] != other.table[i]) {
+      if (table[i] != hashTable.table[i]) {
         return false;
       }
     }
@@ -101,8 +78,8 @@ namespace lasd {
   }
 
   template <typename Data> inline bool
-  HashTableClsAdr<Data>::operator!=(const HashTableClsAdr& other) const noexcept {
-    return !(*this == other);
+  HashTableClsAdr<Data>::operator!=(const HashTableClsAdr& hashTable) const noexcept {
+    return !(*this == hashTable);
   }
 
   template <typename Data> bool
@@ -127,7 +104,6 @@ namespace lasd {
     return false;
   }
 
-  // Remove function
   template <typename Data> bool
   HashTableClsAdr<Data>::Remove(const Data& data) {
     unsigned long index = HashKey(data) % tableSize;
@@ -138,16 +114,19 @@ namespace lasd {
     return false;
   }
 
-  // Exists function
   template <typename Data> bool
   HashTableClsAdr<Data>::Exists(const Data& data) const noexcept {
     unsigned long index = HashKey(data) % tableSize;
     return table[index].Exists(data);
   }
 
-  // Resize function
+  
   template <typename Data> void
   HashTableClsAdr<Data>::Resize(unsigned long newTableSize) {
+    if (newTableSize < 1) {
+      return;
+    }
+
     Vector<List<Data>> oldTable = std::move(table);
     unsigned long oldTableSize = tableSize;
 
@@ -166,7 +145,6 @@ namespace lasd {
     }
   }
 
-  // Clear function
   template <typename Data> void
   HashTableClsAdr<Data>::Clear() noexcept {
     for (unsigned long i = 0; i < tableSize; ++i) {
@@ -174,5 +152,4 @@ namespace lasd {
     }
     size = 0;
   }
-
 }

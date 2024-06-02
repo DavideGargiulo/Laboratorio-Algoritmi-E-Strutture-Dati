@@ -38,7 +38,7 @@ namespace lasd {
       HashTableClsAdr(HashTableClsAdr&&) noexcept;
 
       // Destructor
-      virtual ~HashTableClsAdr();
+      virtual ~HashTableClsAdr() = default;
 
       // Copy assignment
       HashTableClsAdr& operator=(const HashTableClsAdr&);
