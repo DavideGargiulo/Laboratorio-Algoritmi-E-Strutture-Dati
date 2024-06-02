@@ -21,7 +21,6 @@ namespace lasd {
       using HashTable<Data>::distribution;
       using HashTable<Data>::distribution2;
       using HashTable<Data>::Insert;
-      using HashTable<Data>::InsertAll;
       using HashTable<Data>::InsertSome;
       using HashTable<Data>::HashKey;
 
@@ -33,11 +32,11 @@ namespace lasd {
       HashTableOpnAdr();
 
       // Specific constructors
-      HashTableOpnAdr(const unsigned long); // A hash table of a given size
-      HashTableOpnAdr(const TraversableContainer<Data>&); // A hash table obtained from a TraversableContainer
-      HashTableOpnAdr(const unsigned long, const TraversableContainer<Data>&); // A hash table of a given size obtained from a TraversableContainer
-      HashTableOpnAdr(MappableContainer<Data>&&) noexcept; // A hash table obtained from a MappableContainer
-      HashTableOpnAdr(const unsigned long, MappableContainer<Data>&&) noexcept; // A hash table of a given size obtained from a MappableContainer
+      HashTableOpnAdr(const unsigned long);
+      HashTableOpnAdr(const TraversableContainer<Data>&);
+      HashTableOpnAdr(const unsigned long, const TraversableContainer<Data>&);
+      HashTableOpnAdr(MappableContainer<Data>&&) noexcept;
+      HashTableOpnAdr(const unsigned long, MappableContainer<Data>&&) noexcept;
 
       // Copy constructor
       HashTableOpnAdr(const HashTableOpnAdr&);
@@ -76,6 +75,8 @@ namespace lasd {
 
       // Auxiliary member functions
       virtual unsigned long HashKey(const Data&, unsigned long) const noexcept;
+      // virtual unsigned long Find(const Data&, unsigned long) const noexcept;
+      // virtual unsigned long FindEmpty(const Data&, unsigned long) const noexcept;
   };
 }
 
