@@ -286,6 +286,7 @@ void MyHashTableString(lasd::HashTable<string> & ht, const lasd::LinearContainer
       Exists(loctestnum, loctesterr, ht, false, "str" + to_string(i));
     }
     Size(loctestnum, loctesterr, ht, true, 3);
+    ht.Resize(0);
 
   } catch (...) {
     loctestnum++; loctesterr++;
