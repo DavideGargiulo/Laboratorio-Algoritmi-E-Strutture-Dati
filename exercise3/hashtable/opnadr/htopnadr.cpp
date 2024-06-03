@@ -1,110 +1,75 @@
 namespace lasd {
 
-  template <typename Data>
-  HashTableOpnAdr<Data>::HashTableOpnAdr() {
-    tableSize = 128;
-
-    hashMultiplier = 2 * (distribution(generator)) + 1;
-    hashIncrement = 2 * distribution2(generator);
+  template <typename Data> inline
+  HashTableOpnAdr<Data>::HashTableOpnAdr(const unsigned long newSize) {
+    while (tableSize < newSize) {
+      tableSize *= 2;
+    }
 
     table.Resize(tableSize);
     state.Resize(tableSize);
-
-    for (unsigned long i = 0; i < tableSize; i++) {
-      state[i] = 0;
-    }
   }
 
   template <typename Data>
-  inline HashTableOpnAdr<Data>::HashTableOpnAdr(const ulong newSize) {
-    tableSize = std::pow(2, std::ceil(log2((newSize < 128) ? 128 : newSize)));
-    
-    hashMultiplier = 2 * (distribution(generator)) + 1;
-    hashIncrement = 2 * distribution2(generator);
-
-    table.Resize(tableSize);
-    state.Resize(tableSize);
-
-    for (unsigned long i = 0; i < tableSize; i++) {
-      state[i] = 0;
-    }
-  }
-
-  template <typename Data>
-  HashTableOpnAdr<Data>::HashTableOpnAdr(const TraversableContainer<Data>& container) : HashTableOpnAdr(container.Size() * 2) {
+  HashTableOpnAdr<Data>::HashTableOpnAdr(const TraversableContainer<Data>& container)
+      : HashTableOpnAdr(container.Size()) {
     InsertSome(container);
   }
 
   template <typename Data>
-  HashTableOpnAdr<Data>::HashTableOpnAdr(const ulong newSize, const TraversableContainer<Data>& container) : HashTableOpnAdr(newSize) {
+  HashTableOpnAdr<Data>::HashTableOpnAdr(const unsigned long newSize, const TraversableContainer<Data>& container) : HashTableOpnAdr(newSize) {
     InsertSome(container);
   }
 
-
   template <typename Data>
-  HashTableOpnAdr<Data>::HashTableOpnAdr(MappableContainer<Data>&& container) noexcept : HashTableOpnAdr(container.Size() * 2) {
+  HashTableOpnAdr<Data>::HashTableOpnAdr(MappableContainer<Data>&& container) noexcept : HashTableOpnAdr(container.Size()) {
     InsertSome(std::move(container));
   }
 
   template <typename Data>
-  HashTableOpnAdr<Data>::HashTableOpnAdr(const ulong newSize, MappableContainer<Data>&& container) noexcept : HashTableOpnAdr(newSize) {
+  HashTableOpnAdr<Data>::HashTableOpnAdr(const unsigned long newSize, MappableContainer<Data>&& container) noexcept : HashTableOpnAdr(newSize) {
     InsertSome(std::move(container));
   }
 
   template <typename Data>
-  HashTableOpnAdr<Data>::HashTableOpnAdr(const HashTableOpnAdr<Data>& hashTable) {
-    size = hashTable.size;
-    tableSize = hashTable.tableSize;
-    hashMultiplier = hashTable.hashMultiplier;
-    hashIncrement = hashTable.hashIncrement;
+  HashTableOpnAdr<Data>::HashTableOpnAdr(const HashTableOpnAdr<Data>& hashTable) : HashTable<Data>(hashTable) {
     table = hashTable.table;
     state = hashTable.state;
   }
 
   template <typename Data>
-  HashTableOpnAdr<Data>::HashTableOpnAdr(HashTableOpnAdr<Data>&& hashTable) noexcept {
-    std::swap(size, hashTable.size);
-    std::swap(tableSize, hashTable.tableSize);
-    std::swap(hashMultiplier, hashTable.hashMultiplier);
-    std::swap(hashIncrement, hashTable.hashIncrement);
+  HashTableOpnAdr<Data>::HashTableOpnAdr(HashTableOpnAdr<Data>&& hashTable) noexcept : HashTable<Data>(std::move(hashTable)) {
     std::swap(table, hashTable.table);
     std::swap(state, hashTable.state);
   }
 
   template <typename Data> HashTableOpnAdr<Data>&
   HashTableOpnAdr<Data>::operator=(const HashTableOpnAdr<Data>& hashTable) {
-    HashTableOpnAdr<Data>* temp = new HashTableOpnAdr(hashTable);
-    std::swap(*this, *temp);
-    delete temp;
+    HashTable<Data>::operator=(hashTable);
+    table = hashTable.table;
+    state = hashTable.state;
     return *this;
   }
 
   template <typename Data> HashTableOpnAdr<Data>&
   HashTableOpnAdr<Data>::operator=(HashTableOpnAdr<Data>&& hashTable) noexcept {
-    std::swap(size, hashTable.size);
-    std::swap(tableSize, hashTable.tableSize);
-    std::swap(hashMultiplier, hashTable.hashMultiplier);
-    std::swap(hashIncrement, hashTable.hashIncrement);
+    HashTable<Data>::operator=(std::move(hashTable));
     std::swap(table, hashTable.table);
     std::swap(state, hashTable.state);
     return *this;
   }
 
-  template <typename Data>
-  bool HashTableOpnAdr<Data>::operator==(const HashTableOpnAdr<Data>& hashTable) const noexcept {
-    if (size != hashTable.size || tableSize != hashTable.tableSize) {
+  template <typename Data> bool
+  HashTableOpnAdr<Data>::operator==(const HashTableOpnAdr<Data>& hashTable) const noexcept {
+    if (size != hashTable.size) {
       return false;
     }
 
     for (unsigned long i = 0; i < tableSize; i++) {
-      if (state[i] != hashTable.state[i]) {
-        return false;
-      }
-      if (state[i] == 1 && table[i] != hashTable.table[i]) {
+      if (state[i] == 1 && !hashTable.Exists(table[i])) {
         return false;
       }
     }
-
     return true;
   }
 
@@ -113,112 +78,141 @@ namespace lasd {
     return !(*this == hashTable);
   }
 
-  template <typename Data>
-  bool HashTableOpnAdr<Data>::Insert(const Data& data) {
-    if (Exists(data)) {
+  template <typename Data> bool
+  HashTableOpnAdr<Data>::Insert(const Data& data) {
+    if (size >= tableSize * 0.75) {
+      Resize(size * 2);
+    }
+
+    unsigned long index = FindEmpty(data, 0);
+    unsigned long hashIndex = HashKey(data, index);
+
+    if (state[hashIndex] == 1) {
       return false;
     }
-    for (unsigned long i = 0; i < tableSize; ++i) {
-      unsigned long index = HashKey(data, i);
-      if (state[index] != 1) {
-        table[index] = data;
-        state[index] = 1;
-        size++;
-        if (static_cast<float>(size) / tableSize >= 0.75) {
-          Resize(2 * tableSize);
-        }
-        return true;
-      }
+
+    int temp = state[hashIndex];
+    table[hashIndex] = data;
+    state[hashIndex] = 1;
+    size++;
+
+    if (!temp) {
+      return true;
     }
-    return false;
+
+    return !Remove(data, index + 1);
   }
 
   template <typename Data> bool
   HashTableOpnAdr<Data>::Insert(Data&& data) {
-    if (Exists(data)) {
+    if (size >= tableSize * 0.75) {
+      Resize(size * 2);
+    }
+
+    unsigned long index = FindEmpty(data, 0);
+    unsigned long hashIndex = HashKey(data, index);
+
+    if (state[hashIndex] == 1) {
       return false;
     }
-    for (unsigned long i = 0; i < tableSize; ++i) {
-      unsigned long index = HashKey(data, i);
-      if (state[index] != 1) {
-        table[index] = std::move(data);
-        state[index] = 1;
-        size++;
-        if (static_cast<float>(size) / tableSize >= 0.75) {
-          Resize(2 * tableSize);
-        }
-        return true;
-      }
+
+    int temp = state[hashIndex];
+    std::swap(table[hashIndex], data);
+    state[hashIndex] = 1;
+    size++;
+
+    if (!temp) {
+      return true;
     }
-    return false;
+
+    return !Remove(data, index + 1);
   }
 
   template <typename Data> bool
   HashTableOpnAdr<Data>::Remove(const Data& data) {
-    for (unsigned long i = 0; i < tableSize; ++i) {
-      unsigned long index = HashKey(data, i);
-      if (state[index] == 1 && table[index] == data) {
-        state[index] = 2;
-        --size;
-        return true;
-      }
-    }
-    return false;
+    return Remove(data, 0);
   }
 
   template <typename Data> bool
   HashTableOpnAdr<Data>::Exists(const Data& data) const noexcept {
-    for (unsigned long i = 0; i < tableSize; ++i) {
-      unsigned long index = HashKey(data, i);
-      if (state[index] == 0) {
-        return false;
-      }
-      if (state[index] == 1 && table[index] == data) {
-        return true;
-      }
-    }
-    return false;
+    return state[HashKey(data, Find(data, 0))];
   }
-  
-  template <typename Data> void
-  HashTableOpnAdr<Data>::Resize(unsigned long newSize) {    
-    Vector<Data> oldTable = std::move(table);
-    Vector<int> oldState = std::move(state);
-    unsigned long oldSize = tableSize;
 
-    tableSize = newSize;
-    table.Resize(newSize);
-    state.Resize(newSize);
+  template <typename Data> void
+  HashTableOpnAdr<Data>::Resize(unsigned long newSize) {
+    if (!newSize) {
+      Clear();
+      return;
+    }
+
+    if (newSize == tableSize || newSize < 128) {
+      return;
+    }
+
+    HashTableOpnAdr<Data> temp(newSize);
 
     for (unsigned long i = 0; i < tableSize; i++) {
-      state[i] = 0;
-    }
-
-    size = 0;
-    for (unsigned long i = 0; i < oldSize; i++) {
-      if (oldState[i] == 1) {
-        Insert(oldTable[i]);
+      if (state[i] == 1) {
+        temp.Insert(table[i]);
       }
     }
+
+    std::swap(*this, temp);
   }
 
-  template <typename Data> void 
+  template <typename Data> void
   HashTableOpnAdr<Data>::Clear() noexcept {
+    size = 0;
     tableSize = 128;
-    table.Clear();
     table.Resize(tableSize);
     state.Resize(tableSize);
-    
+
     for (unsigned long i = 0; i < tableSize; i++) {
       state[i] = 0;
     }
-
-    size = 0;
   }
 
   template <typename Data> unsigned long
   HashTableOpnAdr<Data>::HashKey(const Data& data, unsigned long key) const noexcept {
-    unsigned long index = hashable(data);
-    return (HashKey(index) + key) % tableSize;
+    return (HashKey(data) + key) % tableSize;
+  }
+
+  template <typename Data> unsigned long
+  HashTableOpnAdr<Data>::Find(const Data& data, unsigned long index) const noexcept {
+    while (index < tableSize) {
+      if ((state[HashKey(data, index)] == 1 && table[HashKey(data, index)] == data) || state[HashKey(data, index)] == 0) {
+        return index;
+      }
+      index++;
+    }
+    return index;
+  }
+
+  template <typename Data> unsigned long 
+  HashTableOpnAdr<Data>::FindEmpty(const Data& data, unsigned long index) const noexcept {
+    while (index < tableSize) {
+      if (state[HashKey(data, index)] != 1 || table[HashKey(data, index)] == data) {
+        return index;
+      }
+      index++;
+    }
+    return index;
+  }
+
+  template <typename Data> bool
+  HashTableOpnAdr<Data>::Remove(const Data& data, unsigned long i) noexcept {
+    unsigned long index = Find(data, i);
+    unsigned long indexPos = HashKey(data, index);
+
+    if (!state[indexPos])
+      return false;
+
+    state[indexPos] = 2;
+
+    if (--size < tableSize * 0.25) {
+      Resize(size / 0.5);
+    }
+
+    return true;
   }
 }

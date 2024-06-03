@@ -322,6 +322,7 @@ void MyHashTableString(uint & testnum, uint & testerr) {
     lasd::HashTableClsAdr<string> cophtclsadr(htclsadr);
     EqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
     htclsadr.Clear();
+    InsertC(loctestnum, loctesterr, cophtclsadr, string("copied"));
     NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
     htclsadr = std::move(cophtclsadr);
     NonEqualHT(loctestnum, loctesterr, cophtclsadr, htclsadr);
@@ -331,6 +332,7 @@ void MyHashTableString(uint & testnum, uint & testerr) {
     lasd::HashTableOpnAdr<string> cophtopnadr(htopnadr);
     EqualHT(loctestnum, loctesterr, cophtopnadr, htopnadr);
     htopnadr.Clear();
+    InsertC(loctestnum, loctesterr, cophtopnadr, string("copied"));
     NonEqualHT(loctestnum, loctesterr, cophtopnadr, htopnadr);
     htopnadr = std::move(cophtopnadr);
     NonEqualHT(loctestnum, loctesterr, cophtopnadr, htopnadr);

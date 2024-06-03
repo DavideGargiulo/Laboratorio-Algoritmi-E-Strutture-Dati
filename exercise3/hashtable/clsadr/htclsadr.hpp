@@ -1,35 +1,37 @@
 #ifndef HTCLSADR_HPP
 #define HTCLSADR_HPP
 
-#include "../hashtable.hpp"
-#include "../../vector/vector.hpp"
 #include "../../list/list.hpp"
+#include "../../vector/vector.hpp"
+#include "../hashtable.hpp"
 
 namespace lasd {
 
   template <typename Data>
   class HashTableClsAdr : virtual public HashTable<Data> {
-
     private:
 
     protected:
       using HashTable<Data>::size;
       using HashTable<Data>::hashable;
+      using HashTable<Data>::hashMultiplier;
+      using HashTable<Data>::hashIncrement;
+      using HashTable<Data>::prime;
       using HashTable<Data>::tableSize;
-      using HashTable<Data>::InsertAll;
+      using DictionaryContainer<Data>::InsertAll;
       using HashTable<Data>::HashKey;
 
-      Vector<List<Data>> table;
     public:
+      Vector<List<Data>> table{tableSize};
       // Default constructor
-      HashTableClsAdr();
+      HashTableClsAdr() = default;
 
       // Specific constructors
-      HashTableClsAdr(const unsigned long); // A hash table of a given size
-      HashTableClsAdr(const TraversableContainer<Data>&); // A hash table obtained from a TraversableContainer
-      HashTableClsAdr(const unsigned long, const TraversableContainer<Data>&); // A hash table of a given size obtained from a TraversableContainer
-      HashTableClsAdr(MappableContainer<Data>&&); // A hash table obtained from a MappableContainer
-      HashTableClsAdr(const unsigned long, MappableContainer<Data>&&); // A hash table of a given size obtained from a MappableContainer
+      HashTableClsAdr(const unsigned long);
+      HashTableClsAdr(const TraversableContainer<Data>&);
+      HashTableClsAdr(const unsigned long, const TraversableContainer<Data>&);
+      HashTableClsAdr(MappableContainer<Data>&&);
+      HashTableClsAdr(const unsigned long, MappableContainer<Data>&&);
 
       // Copy constructor
       HashTableClsAdr(const HashTableClsAdr&);

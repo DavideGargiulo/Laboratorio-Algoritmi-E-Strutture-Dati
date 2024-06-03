@@ -1,8 +1,8 @@
 #ifndef HTOPNADR_HPP
 #define HTOPNADR_HPP
 
-#include "../hashtable.hpp"
 #include "../../vector/vector.hpp"
+#include "../hashtable.hpp"
 
 namespace lasd {
 
@@ -12,24 +12,16 @@ namespace lasd {
 
     protected:
       using HashTable<Data>::size;
-      using HashTable<Data>::hashable;
-      using HashTable<Data>::tableSize;
-      using HashTable<Data>::hashMultiplier;
-      using HashTable<Data>::hashIncrement;
-      using HashTable<Data>::prime;
-      using HashTable<Data>::generator;
-      using HashTable<Data>::distribution;
-      using HashTable<Data>::distribution2;
-      using HashTable<Data>::Insert;
       using HashTable<Data>::InsertSome;
       using HashTable<Data>::HashKey;
+      using HashTable<Data>::tableSize;
 
-      Vector<Data> table;
-      Vector<int> state;
+      Vector<Data> table{tableSize};
+      Vector<int> state{tableSize};
 
     public:
       // Default constructor
-      HashTableOpnAdr();
+      HashTableOpnAdr() = default;
 
       // Specific constructors
       HashTableOpnAdr(const unsigned long);
@@ -39,23 +31,23 @@ namespace lasd {
       HashTableOpnAdr(const unsigned long, MappableContainer<Data>&&) noexcept;
 
       // Copy constructor
-      HashTableOpnAdr(const HashTableOpnAdr&);
+      HashTableOpnAdr(const HashTableOpnAdr<Data>&);
 
       // Move constructor
-      HashTableOpnAdr(HashTableOpnAdr&&) noexcept;
+      HashTableOpnAdr(HashTableOpnAdr<Data>&&) noexcept;
 
       // Destructor
       virtual ~HashTableOpnAdr() = default;
 
       // Copy assignment
-      HashTableOpnAdr& operator=(const HashTableOpnAdr&);
+      HashTableOpnAdr& operator=(const HashTableOpnAdr<Data>&);
 
       // Move assignment
-      HashTableOpnAdr& operator=(HashTableOpnAdr&&) noexcept;
+      HashTableOpnAdr& operator=(HashTableOpnAdr<Data>&&) noexcept;
 
       // Comparison operators
-      inline bool operator==(const HashTableOpnAdr&) const noexcept;
-      inline bool operator!=(const HashTableOpnAdr&) const noexcept;
+      inline bool operator==(const HashTableOpnAdr<Data>&) const noexcept;
+      inline bool operator!=(const HashTableOpnAdr<Data>&) const noexcept;
 
       // Specific member functions (inherited from DictionaryContainer)
       bool Insert(const Data&) override;
@@ -63,20 +55,20 @@ namespace lasd {
       bool Remove(const Data&) override;
 
       // Specific member functions (inherited from TestableContainer)
-      bool Exists(const Data&) const noexcept override;
+      virtual bool Exists(const Data&) const noexcept override;
 
       // Specific member functions (inherited from ResizableContainer)
-      void Resize(unsigned long);
+      void Resize(unsigned long) override;
 
       // Specific member functions (inherited from ClearableContainer)
       void Clear() noexcept override;
 
     protected:
-
       // Auxiliary member functions
-      virtual unsigned long HashKey(const Data&, unsigned long) const noexcept;
-      // virtual unsigned long Find(const Data&, unsigned long) const noexcept;
-      // virtual unsigned long FindEmpty(const Data&, unsigned long) const noexcept;
+      unsigned long HashKey(const Data&, unsigned long) const noexcept;
+      unsigned long Find(const Data&, unsigned long) const noexcept;
+      unsigned long FindEmpty(const Data&, unsigned long) const noexcept;
+      bool Remove(const Data&, unsigned long) noexcept;
   };
 }
 

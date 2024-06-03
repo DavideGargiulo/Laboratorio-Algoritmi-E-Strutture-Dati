@@ -49,7 +49,6 @@ namespace lasd {
   template <typename Data> bool
   Vector<Data>::operator==(const Vector<Data> &vector) const noexcept {
     if (size != vector.size) {
-      std::cout << "Vector sizes differ: " << size << " vs " << vector.size << std::endl;
       return false;
     }
 
@@ -100,7 +99,7 @@ namespace lasd {
         return;
     }
 
-    Data* newElements = new Data[newSize];
+    Data* newElements = new Data[newSize]();
 
     unsigned long minSize = std::min(size, newSize);
 

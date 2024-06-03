@@ -16,6 +16,10 @@ namespace lasd {
     return true;
   }
 
+  template <typename Data> bool
+  LinearContainer<Data>::operator!=(const LinearContainer<Data>& container) const noexcept {
+    return !(*this == container);
+  }
 
   template <typename Data> inline const Data& 
   LinearContainer<Data>::Front() const {
